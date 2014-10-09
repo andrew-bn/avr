@@ -5,11 +5,10 @@
  *   Author: AB
  */
  .listmac
-.include "main.asm"
+.include "manager.inc"
 
 .CSEG
-.dw 100			// main task stack size
-main: jmp main	// main task
+				.dw 100					// main task stack size
+main:			jmp main				// main task
 jmp main
-jmp main
-jmp main
+
