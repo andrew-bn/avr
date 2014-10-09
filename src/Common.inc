@@ -20,5 +20,4 @@
  .equ WORD_SIZE = 2
 
 #endif  /* _COMMON_INC_ */
-
-.
+ 
