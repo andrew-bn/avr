@@ -77,6 +77,9 @@
     <Compile Include="Memory.inc">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="object.inc">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="doc" />

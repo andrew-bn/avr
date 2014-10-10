@@ -57,7 +57,7 @@
 				ldi curBlockL, low(SRAM_START)
 
 				;load memory block header
-checkBlock:		movw XH, curBlockH						; load pointer of current memory block to X register
+checkBlock:		movw XH:XL, curBlockH:curBlockL			; load pointer of current memory block to X register
 
 				ld headerH,X+
 				ld headerL,-X

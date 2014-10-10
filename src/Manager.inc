@@ -6,6 +6,7 @@
  */ 
  .include "common.inc"
  .include "memory.inc"
+ .include "object.inc"
 
  .equ TASK_HEADER_SIZE = WORD_SIZE ; stack size
  .equ MAX_TASKS = 10
