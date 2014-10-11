@@ -17,11 +17,11 @@
 
  object:
  object_size:			.dw _object_size
-object_base:			.dw 0x0
+ object_base:			.dw 0x0
 
  object_new:			ret										;ctor
 
- object__memalloc:		
+ object__memalloc:	
 				
  
 

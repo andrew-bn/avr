@@ -6,113 +6,175 @@
  */ 
 #ifndef _MEMORY_INC_
 #define _MEMORY_INC_
-.include "common.inc"
- /*
- input:
- 0 - size
- 
- uses:
- temp1-4
+ .include "common.inc"
+ .equ headerSize = 4
+ .equ pointerSize = 2
+ .CSEG
+ memory_init:
+ .set stackSize = 3
+ .def temp = R16
+					push XL
+					push XH
+					push temp
 
- output
- X - pointer to allocated object
- returns FFFF if no memory
- */
- .equ blockStatusBit = 7
+					ldi XH, high(SRAM_START)
+					ldi XL, low(SRAM_START)
 
- .MACRO _MINIT
-				ser tempH								; set 0xFF
-				ser tempL								; set 0xFF
+					; first byte is 0
+					clr temp
+					st X+, temp
 
-				cbr tempH, blockStatusBit				; clean block status bit
+					; next dw is next block pointer (ramend)
+					ldi temp, low(RAMEND)
+					st X+, temp
+					ldi temp, high(RAMEND)
+					st X+, temp
 
-				ldi XH, high(SRAM_START)
-				ldi XL, low(SRAM_START)
+					;next dw is prev==next - block is free
+					ldi temp, low(RAMEND)
+					st X+, temp
+					ldi temp, high(RAMEND)
+					st X+, temp
 
-				st X+, tempH
-				st -X, tempL
- .ENDMACRO
- .MACRO _MALLOC
+					pop temp
+					pop XH
+					pop XL
 
-	.def curBlockH = R16
-	.def curBlockL = R17
-	
-	.def headerH = R18
-	.def headerL = R19
+ ret
 
-	.def memEndH = R20
-	.def memEndL = R21
+ memory_allocate:; dw size
+ .set paramSize = 2
+ .set stackSize = 14
 
-	.def sizeH = R22
-	.def sizeL = R23
+ .def nextL = R18
+ .def nextH = R19
 
-				ldi sizeH, high(@0)
-				ldi sizeL, low(@0)
+ .def prevPrevL = R20
+ .def prevPrevH = R21
 
-				ldi memEndH, high(RAMEND)
-				ldi memEndL, low(RAMEND)
+ .def sizeL = R22
+ .def sizeH = R23
 
-				;start from first memory block
-				ldi curBlockH, high(SRAM_START)
-				ldi curBlockL, low(SRAM_START)
+ .def prevL = R16
+ .def prevH = R17
 
-				;load memory block header
-checkBlock:		movw XH:XL, curBlockH:curBlockL			; load pointer of current memory block to X register
+ .def curL = R24
+ .def curH = R25
 
-				ld headerH,X+
-				ld headerL,-X
+				_PUSH_COMMON stackSize-4, 2 ; push R16-R23, X, Y
+				_STACK_TO_Y stackSize, paramSize
 
-				sbrs headerH, blockStatusBit			; if bit is 0
-				rjmp tryAllocate						; then try to allocate memory
+				; load size from stack
+				ld sizeL, Y
+				ld sizeH, -Y
 
- jumpToNext:											; else jump to next memory block
-				;jumping to next memory block
-				cbr headerH, blockStatusBit				; clean block status bit
+				; start from the begining but skip first byte (invalid pointer reference)
+				ldi nextH, high(SRAM_START+1)
+				ldi nextL, low(SRAM_START+1)
 
-				add curBlockL, headerL					; increment memory block address
-				adc curBlockH, headerH
+				clr curH
+				clr curL
 
-				cp memEndL, curBlockL					; compare next block address with memoryEnd address
-				cpc memEndH, curBlockH
+checkBlock:
+				; if end of memory, then NoMemory error
 
-				brcs noMemory							; if curBlock > memEnd (carry is 1)
+				ldi prevPrevH, high(RAMEND)
+				ldi prevPrevL, low(RAMEND)
 
-				rjmp checkBlock							; check block
- 
- tryAllocate:	cbr headerH, blockStatusBit				; clean block status bit
+				cp prevPrevL, nextL
+				cpc prevPrevH, nextH
 
-				cp headerL, sizeL						; compare block size with requested size
-				cpc headerH, sizeH
+				brcs noMemory
+
+				; goto current block
+				movw XH:XL, nextH:nextL
+				; store pointer to previous block
+				movw prevPrevH:prevPrevL,curH:curL
+				; store pointer to current block
+				movw curH:curL, nextH:nextL
 				
-				brcc allocate							; allocate memory if size<=blockSize (carry is 0)
-				rjmp jumpToNext							; else jump to next block
+				; load pointers to next block and prev block
+				ld nextL, X+
+				ld nextH, X+
+				ld prevL, X+
+				ld prevH, X+
 
- allocate:		sbr sizeH, blockStatusBit				; setup new header
-				st X+, sizeH							; store new header
-				st -X, sizeL
+				; if prev == next then block is free
 
-				sub headerL, sizeL						; setup freeBlock size
-				sbc headerH, sizeH						
+				cp prevL, nextL
+				brne checkBlock
+				cp prevH, nextH
+				brne checkBlock
 
-				tst headerH							; if new size is 0 then exit, else setup new free block
-				brne setupFreeBlock
-				tst headerL
-				breq exit
+				; try to allocate
+ tryAllocate:
+				; calculate newNext pointer to X
 
-setupFreeBlock:	add XL, headerL							; setup freeBlock header address
-				adc XH, headerH
+				add XL, sizeL
+				adc XH, sizeH
 
-				cbr headerH, blockStatusBit
+				; compare new pointer with next
 
-				st X+, headerH							; store freeBlock header
-				st -X, headerL
+				cp nextL, XL
+				cpc nextH, XH
+				
+				; if X>next, then check next block else allocate
+				brcs checkBlock
+
+ allocate:
+				; if next block is equal to next pointer then just set Prev equal to prevPrev
+				subi nextL,low(headerSize)
+				sbci nextH, high(headerSize)
+
+				cp XL, nextL
+				cpc XH, nextH
+
+				brcs allocateNew
+
+				movw XH:XL, curH:curL
+
+				subi XL, low(-pointerSize)
+				sbci XH, high(-pointerSize)
+
+				st X+ , prevPrevL
+				st X , prevPrevH
+				movw XH:XL, curH:curL
+
+				rjmp exit
+
+ allocateNew:	
+				subi nextL, low(-headerSize)
+				sbci nextH, high(-headerSize)
+				; set x.next = x.prev = next - free block
+				st X+, nextL
+				st X+, nextH
+				st X+, nextL
+				st X+, nextH
+
+				; set Prev pointer equal to PrevPrev
+				
+				movw nextH:nextL, XH:XL
+				subi nextL, low(headerSize)
+				sbci nextH, high(headerSize)
+
+				movw XH:XL, curH:curL
+				st X+, nextL
+				st X+, nextH
+
+				st X+, prevPrevL
+				st X, prevPrevH
+				movw XH:XL, curH:curL
 
 				rjmp exit
  noMemory:
-				ldi XH, 0xFF							;load NoMemory status
-				ldi XL, 0xFF
+				clr XH
+				clr XL
  exit:
+				subi XL, low(-headerSize)
+				sbci XH, high(-headerSize)
+				movw retH:retL, XH:XL
 
- .ENDMACRO
+				_POP_COMMON stackSize-4, 2, paramSize ; push R16-R23, X, Y
+ ret
 
 #endif  /* _MEMORY_INC_ */

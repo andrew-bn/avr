@@ -1,9 +1,9 @@
 
-|Offcet|Name           |Size(bytes)|Description                                                         |
----------------------------------------------------------------------------------------------------------
-|0     |BlockHead      |2          |BlockHead+Body: Size of memory block (High byte/Low byte). bit 7 of first byte - 0/1 free/busy
-|2     |Body           |N          |                                                                    |
+Offcet|Name           |Size(bytes)|Description
+----------------------------------------------
+0     |NextAddress    |2          | Next block address
+2     |PrevAddress    |2          | Prev block address. 0x0000 if this block is first, if Prev == Next - block is free
+4     |Block          |N          |
 
 ----------------
 
-Memory_New
