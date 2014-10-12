@@ -10,48 +10,48 @@
 
  .def retH = R15
  .def retL = R14
-
+ 
  .macro _STACK_TO_Y
 
 		in YH, SPH
 		in YL, SPL
 
-		subi YL, low(-(@0+2+@1+1));plus command pointer and sreg
-		sbci YH, high(-(@0+2+@1+1))
+		subi YL, low(-(@0+2+1));plus command pointer and sreg
+		sbci YH, high(-(@0+2+1))
 
  .endm
 
- .macro _PUSH_COMMON
+ .macro _STACK ;@0 stacksize; @1 - memory pointers count
 
 	push R16
 	in R16,SREG
 	push R16
 
-	.if @0 >= 2
+	.if (@0-@1*2) >= 2
 		push R17
 	.endif
-	.if @0 >= 3
+	.if (@0-@1*2) >= 3
 		push R18
 	.endif
-	.if @0 >= 4
+	.if (@0-@1*2) >= 4
 		push R19
 	.endif
-	.if @0 >= 5
+	.if (@0-@1*2) >= 5
 		push R20
 	.endif
-	.if @0 >= 6
+	.if (@0-@1*2) >= 6
 		push R21
 	.endif
-	.if @0 >= 7
+	.if (@0-@1*2) >= 7
 		push R22
 	.endif
-	.if @0 >= 8
+	.if (@0-@1*2) >= 8
 		push R23
 	.endif
-	.if @0 >= 9
+	.if (@0-@1*2) >= 9
 		push R24
 	.endif
-	.if @0 >= 10
+	.if (@0-@1*2) >= 10
 		push R25
 	.endif
 
@@ -72,7 +72,7 @@
 	.endif
  .endm
 
- .macro _POP_COMMON
+ .macro _UNSTACK
 
 	.if @1 >= 3
 		pop ZH
@@ -88,31 +88,31 @@
 		pop XH
 		pop XL
 	.endif
-	.if @0 >= 10
+	.if (@0-@1*2) >= 10
 		pop R25
 	.endif
-	.if @0 >= 9
+	.if (@0-@1*2) >= 9
 		pop R24
 	.endif
-	.if @0 >= 8
+	.if (@0-@1*2) >= 8
 		pop R23
 	.endif
-	.if @0 >= 7
+	.if (@0-@1*2) >= 7
 		pop R22
 	.endif
-	.if @0 >= 6
+	.if (@0-@1*2) >= 6
 		pop R21
 	.endif
-	.if @0 >= 5
+	.if (@0-@1*2) >= 5
 		pop R20
 	.endif
-	.if @0 >= 4
+	.if (@0-@1*2) >= 4
 		pop R19
 	.endif
-	.if @0 >= 3
+	.if (@0-@1*2) >= 3
 		pop R18
 	.endif
-	.if @0 >= 2
+	.if (@0-@1*2) >= 2
 		pop R17
 	.endif
 

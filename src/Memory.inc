@@ -20,11 +20,10 @@
 					ldi XH, high(SRAM_START)
 					ldi XL, low(SRAM_START)
 
-					; first byte is 0
-					clr temp
-					st X+, temp
+					/*clr temp
+					st X+, temp*/
 
-					; next dw is next block pointer (ramend)
+					; dw next block pointer (ramend)
 					ldi temp, low(RAMEND)
 					st X+, temp
 					ldi temp, high(RAMEND)
@@ -61,16 +60,16 @@
  .def curL = R24
  .def curH = R25
 
-				_PUSH_COMMON stackSize-4, 2 ; push R16-R23, X, Y
-				_STACK_TO_Y stackSize, paramSize
+				_STACK stackSize, 2
+				_STACK_TO_Y stackSize + paramSize
 
 				; load size from stack
 				ld sizeL, Y
 				ld sizeH, -Y
 
 				; start from the begining but skip first byte (invalid pointer reference)
-				ldi nextH, high(SRAM_START+1)
-				ldi nextL, low(SRAM_START+1)
+				ldi nextH, high(SRAM_START)
+				ldi nextL, low(SRAM_START)
 
 				clr curH
 				clr curL
@@ -174,7 +173,98 @@ checkBlock:
 				sbci XH, high(-headerSize)
 				movw retH:retL, XH:XL
 
-				_POP_COMMON stackSize-4, 2, paramSize ; push R16-R23, X, Y
+				_UNSTACK stackSize, 2
  ret
 
+ memory_destroy: ; dw pointer
+ .set paramSize = 2
+ .set stackSize = 10+4
+
+ .def curH = R17
+ .def curL = R16
+ .def nextL = R18
+ .def nextH = R19
+ .def prevL = R20
+ .def prevH = R21
+ .def tempNextL = R22
+ .def tempNextH = R23
+ .def tempPrevL = R24
+ .def tempPrevH = R25
+
+				_STACK stackSize,2
+				_STACK_TO_Y stackSize + paramSize
+
+				; load pointer from stack
+				ld curL, Y
+				ld curH, -Y
+
+				subi curL, low(headerSize)
+				sbci curH, high(headerSize)
+
+				; load pointers to Next and Prev
+				movw XH:XL, curH:curL
+				ld nextL, X+
+				ld nextH, X+
+				ld prevL, X+
+				ld prevH, X+
+
+				; load next.Next and next.Prev
+				movw XH:XL, nextH:nextL
+				ld tempNextL, X+
+				ld tempNextH, X+
+				ld tempPrevL, X+
+				ld tempPrevH, X+
+
+				; if next block is free, so cur.Next = next.Next, else checkPrev
+				cp tempNextL, tempPrevL
+				brne checkPrev
+				cp tempNextH, tempPrevH
+				brne checkPrev
+
+				movw nextH:nextL, tempNextH:tempNextL
+
+ checkPrev:
+
+				; if begining of memory then free current else continue checking (checkPrev2)
+
+				tst prevH
+				brne checkPrev2
+				tst prevL
+				breq freeCur
+
+				; load prev.Next and prev.Prev
+checkPrev2:		movw XH:XL, prevH:prevL
+				ld tempNextL, X+
+				ld tempNextH, X+
+				ld tempPrevL, X+
+				ld tempPrevH, X+
+
+				; if prev block is NOT free (prev.Next != prev.Prev), then freeCur, else prev.Next = prev.Prev = next
+				cp tempNextL, tempPrevL
+				brne freeCur
+				cp tempNextH, tempPrevH
+				brne freeCur
+
+				movw curH:curL, prevH:prevL
+
+freeCur:		movw XH:XL, curH:curL
+				st X+, nextL
+				st X+, nextH
+				st X+, nextL
+				st X+, nextH
+
+				cpi nextH, high(RAMEND)
+				brne editNext
+				cpi nextL, low(RAMEND)
+				breq destr_exit
+
+editNext:		movw XH:XL, nextH:nextL
+				subi XL, low(-pointerSize)
+				sbci XH, high(-pointerSize)
+				st X+, curL
+				st X+, curH
+
+ destr_exit:	_UNSTACK stackSize,2
+
+ ret
 #endif  /* _MEMORY_INC_ */

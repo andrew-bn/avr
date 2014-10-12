@@ -68,13 +68,16 @@
     <Compile Include="avros.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common.inc">
+    <Compile Include="common.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Manager.inc">
+    <Compile Include="manager.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Memory.inc">
+    <Compile Include="memory.inc">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="memoryTests.inc">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="object.inc">
