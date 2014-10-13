@@ -16,10 +16,10 @@
  .equ _prev = _next + pointerSize
  .equ _data = _prev + pointerSize
  .equ _listItem_size = _data + pointerSize
- 
+
  listItem:
 	listItem_size:		.dw _listItem_size
-	listItem_base:		.dw object
+	listItem_base:		.dw object*2
  
  listItem_ctor:
 						_ENTER 0, 0

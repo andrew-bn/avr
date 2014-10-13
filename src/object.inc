@@ -15,8 +15,17 @@
  .def newH = R11
  .def newL = R10
  .equ metaSize = 4;
+
  .macro NEW
-		_object_new
+		push R16
+		ldi R16, low(2*@0)
+		push R16
+		ldi R16, high(2*@0)
+		push R16
+		call _object_new
+		pop R16
+		pop R16
+		pop R16
  .endm
 
  .macro RETURN 
@@ -71,14 +80,14 @@
 	.def sizeH = R19
 	.def sizeL = R18
 
-						_STACK 4,3
-						_STACK_TO_Y 2
+						_STACK 4+3*2,3
+						_STACK_TO_Y 2+4+3*2
 
 						clr sizeH
 						clr sizeL
 
 						ld tmpL, Y
-						ldd tmpH, Y+1
+						ld tmpH, -Y
 
  calcSize:				movw ZH:ZL, tmpH:tmpL
 						; load size to temp

@@ -24,7 +24,6 @@
 
  .endm
 
-
  .macro _STACK ;@0 stacksize; @1 - memory pointers count
 
 	push R16
