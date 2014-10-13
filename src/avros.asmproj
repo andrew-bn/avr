@@ -65,6 +65,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="listitem.inc">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="avros.asm">
       <SubType>Code</SubType>
     </Compile>

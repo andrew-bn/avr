@@ -8,7 +8,7 @@
 #define _MEMORY_INC_
  .include "common.inc"
  .equ headerSize = 4
- .equ pointerSize = 2
+
  .CSEG
  memory_init:
  .set stackSize = 3

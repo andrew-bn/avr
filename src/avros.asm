@@ -9,12 +9,17 @@
  jmp start
 .include "memory.inc"
 .include "memoryTests.inc"
+.include "listItem.inc"
  start:
 					; setup stack
 					ldi R16, low(RAMEND)
 					out SPL, R16
 					ldi R16, high(RAMEND)
 					out SPH, R16
+
+					NEW listItem
+
+tmp2:				rjmp tmp2
 
 					call memoryTests_run
 					call memory_init

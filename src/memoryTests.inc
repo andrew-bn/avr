@@ -11,7 +11,9 @@
  .macro _TEST_BYTE
 		ld R16, X+
 		cpi R16, @0
-		sbic SREG, 1
+		breq macroE
+		rjmp testFailed
+ macroE:
 
  .endm
  .CSEG

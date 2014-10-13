@@ -10,7 +10,10 @@
 
  .def retH = R15
  .def retL = R14
- 
+
+
+ .equ pointerSize = 2
+
  .macro _STACK_TO_Y
 
 		in YH, SPH
@@ -20,6 +23,7 @@
 		sbci YH, high(-(@0+2+1))
 
  .endm
+
 
  .macro _STACK ;@0 stacksize; @1 - memory pointers count
 
@@ -72,7 +76,7 @@
 	.endif
  .endm
 
- .macro _UNSTACK
+ .macro _UNSTACK;@0 stacksize; @1 - memory pointers count
 
 	.if @1 >= 3
 		pop ZH
@@ -88,6 +92,7 @@
 		pop XH
 		pop XL
 	.endif
+
 	.if (@0-@1*2) >= 10
 		pop R25
 	.endif
