@@ -16,6 +16,11 @@
  .def newL = R10
  .equ metaSize = 4;
 
+ .macro CLASS
+	.dw @1
+	.dw @0 * 2
+ .endm
+
  .macro NEW
 		push R16
 		ldi R16, low(2*@0)
@@ -69,11 +74,10 @@
  .equ _object_offcet = 0x0
  .equ _object_size = 0x00
 
- object:
- object_size:			.dw _object_size
- object_base:			.dw 0x0
+ object: CLASS 0x00, _object_size
 
  object_ctor:			ret
+
  _object_new:
 	.def tmpH = R17
 	.def tmpL = R16

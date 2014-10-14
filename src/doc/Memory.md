@@ -7,3 +7,8 @@ Offcet|Name           |Size(bytes)|Description
 
 ----------------
 
+stack:
+	Parameters
+	RetAddress
+	CommonRegisters+AddressingRegisters
+	Variables

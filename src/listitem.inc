@@ -17,10 +17,7 @@
  .equ _data = _prev + pointerSize
  .equ _listItem_size = _data + pointerSize
 
- listItem:
-	listItem_size:		.dw _listItem_size
-	listItem_base:		.dw object*2
- 
+ listItem: CLASS object, _listItem_size
  listItem_ctor:
 						_ENTER 0, 0
 
@@ -48,5 +45,6 @@
 						
 						_LEAVE 0
 						RETURN R17, R16
+
 
  #endif /* _LISTITEM_INC_ */
