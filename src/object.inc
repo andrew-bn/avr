@@ -12,8 +12,10 @@
 
  .def thisH = R13
  .def thisL = R12
- .def newH = R11
- .def newL = R10
+ .def newH = R13
+ .def newL = R12
+ .def typeH = R13
+ .def typeL = R12
  .equ metaSize = 4;
 
  .macro CLASS
@@ -24,13 +26,11 @@
  .macro NEW
 		push R16
 		ldi R16, low(2*@0)
-		push R16
+		mov typeL, R16
 		ldi R16, high(2*@0)
-		push R16
+		mov typeH, R16
+		pop R16
 		call _object_new
-		pop R16
-		pop R16
-		pop R16
  .endm
 
  .macro RETURN 
@@ -57,8 +57,8 @@
 	ldd @1,Y+@0+1
  .endm
 
- .macro _ENTER ; stacksize; paramsize
-	_STACK @0+2, 3
+ .macro _ENTER ; paramsize; stacksize
+	_STACK @1+2, 3
 	_STACK_TO_Y @0+2+@1
 	movw ZH:ZL, thisH:thisL
  .endm
@@ -83,9 +83,7 @@
 	.def tmpL = R16
 	.def sizeH = R19
 	.def sizeL = R18
-
-						_STACK 4+3*2,3
-						_STACK_TO_Y 2+4+3*2
+						XPUSH Ar|Br|Xr|Zr|Yr
 
 						clr sizeH
 						clr sizeL
@@ -130,7 +128,8 @@
 
 						icall
 
-						_UNSTACK 4,3
+						XPOP Ar|Br|Xr|Zr|Yr
 						ret
  #endif  /* _OBJECT_INC_ */
+
  

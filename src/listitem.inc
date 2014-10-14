@@ -18,16 +18,15 @@
  .equ _listItem_size = _data + pointerSize
 
  listItem: CLASS object, _listItem_size
- listItem_ctor:
-						_ENTER 0, 0
+ listItem_ctor:	_ENTER 0, 0
 
-						clr R16
-						THIS_WST _next, R16,R16
-						THIS_WST _prev, R16,R16
-						THIS_WST _data, R16,R16
+					clr R16
+					THIS_WST _next, R16,R16
+					THIS_WST _prev, R16,R16
+					THIS_WST _data, R16,R16
 
-						_LEAVE 0
-						ret
+				_LEAVE 0
+				ret
 
  listItem_setNext:
 	.equ p_next = 0

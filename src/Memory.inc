@@ -59,9 +59,8 @@
 
  .def curL = R24
  .def curH = R25
-
-				_STACK stackSize, 2
-				_STACK_TO_Y stackSize + paramSize
+				
+				XPUSH Ar|Br|Cr|Dr|Er|Xr|Yr|Zr
 
 				; load size from stack
 				ld sizeL, Y
@@ -173,7 +172,7 @@ checkBlock:
 				sbci XH, high(-headerSize)
 				movw retH:retL, XH:XL
 
-				_UNSTACK stackSize, 2
+				XPOP Ar|Br|Cr|Dr|Er|Xr|Yr|Zr
  ret
 
  memory_destroy: ; dw pointer

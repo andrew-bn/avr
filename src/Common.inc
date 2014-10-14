@@ -11,8 +11,103 @@
  .def retH = R15
  .def retL = R14
 
+ .equ Ar = 1
+ .def AH = R17
+ .def AL = R16
+ .equ Br = 2
+ .def BH = R19
+ .def BL = R18
+ .equ Cr = 4
+ .def CH = R21
+ .def CL = R20
+ .equ Dr = 8
+ .def DH = R23
+ .def DL = R22
+ .equ Er = 16
+ .def EH = R25
+ .def EL = R24
+ .equ Xr = 32
+ .equ Yr = 64
+ .equ Zr = 128
 
  .equ pointerSize = 2
+
+ .macro XPOP ; registers
+	.if (@0 && Zr) == Zr
+		pop AH
+	.endif
+
+	.if (@0 && Xr) == Xr
+		pop XH
+		pop XL
+	.endif
+	.if (@0 && Er) == Er
+		pop EH
+		pop EL
+	.endif
+	.if (@0 && Dr) == Dr
+		pop DH
+		pop DL
+	.endif
+	.if (@0 && Cr) == Cr
+		pop CH
+		pop CL
+	.endif
+	.if (@0 && Br) == Br
+		pop BH
+		pop BL
+	.endif
+	.if (@0 && Ar) == Ar
+		pop AH
+	.endif
+	pop YH
+	pop YL
+	pop AL
+	out SREG,AL
+	pop AL
+ .endm
+
+ .macro XPUSH ; registers (R16, SREG, YH, YL are pushed always)
+	push AL
+	in AL,SREG
+	push AL
+	push YL
+	push YH
+
+	.if (@0 & Ar) == Ar
+		push AH
+	.endif
+	.if (@0 & Br) == Br
+		push BL
+		push BH
+	.endif
+	.if (@0 & Cr) == Cr
+		push CL
+		push CH
+	.endif
+	.if (@0 & Dr) == Dr
+		push DL
+		push DH
+	.endif
+	.if (@0 & Er) == Er
+		push EL
+		push EH
+	.endif
+	.if (@0 & Xr) == Xr
+		push XL
+		push XH
+	.endif
+	.if (@0 & Zr) == Zr
+		push ZL
+		push ZH
+	.endif
+
+	; recalculate Y <= StackPointer
+	in YH, SPH
+	in YL, SPL
+	subi YL, low(-(6+(@0 && Ar)+(@0 && Br)*2)+(@0 && Cr)*2+(@0 && Dr)*2+(@0 && Er)*2+(@0 && Xr)*2+(@0 && Zr)*2);+ CP, SREG, YH, YL, R16
+	sbci YH, high(-(6+(@0 && Ar)+(@0 && Br)*2)+(@0 && Cr)*2+(@0 && Dr)*2+(@0 && Er)*2+(@0 && Xr)*2+(@0 && Zr)*2);+ CP, SREG, YH, YL, R16
+ .endm
 
  .macro _STACK_TO_Y
 

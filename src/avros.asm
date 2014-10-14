@@ -17,6 +17,7 @@
 					ldi R16, high(RAMEND)
 					out SPH, R16
 
+					XPUSH Ar+Br
 					NEW listItem
 
 tmp2:				rjmp tmp2
