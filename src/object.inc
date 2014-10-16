@@ -10,17 +10,46 @@
  .include "common.inc"
  .include "memory.inc"
 
- .def thisH = R13
- .def thisL = R12
- .def newH = R13
- .def newL = R12
- .def typeH = R13
- .def typeL = R12
+ .def thisH = R15
+ .def thisL = R14
+ .def newH = R15
+ .def newL = R14
+ .def typeH = R15
+ .def typeL = R14
+
  .equ metaSize = 4;
 
  .macro CLASS
 	.dw @1
-	.dw @0 * 2
+	.dw (@0 * 2)
+ .endm
+
+ .macro XCALL ; pointer to object; method
+	movw PH:PL, @0:@1
+	call @2
+ .endm
+
+ .macro XCALLW ; pointer to object; method; Wparam
+	movw PH:PL, @0:@1
+	push @3
+	push @4
+	call @2
+ .endm
+
+ .macro XCALLIW ; pointer to object; method; Wparam
+
+	push AL
+	ldi AL, high(@3)
+	mov TH,AL
+	ldi AL, low(@3)
+	mov TL, AL
+	pop AL
+
+	movw PH:PL, @0:@1
+	push TH
+	push TL
+	call @2
+
  .endm
 
  .macro NEW
@@ -33,40 +62,63 @@
 		call _object_new
  .endm
 
- .macro RETURN 
-	movw retH:retL, @0:@1
-	ret
- .endm
-
- .macro PARAM_LD; @0 param offcet
-		;ld Y+@0, @1
+ .macro DEL
  .endm
 
  .macro PARAM_WLD; @ param offcet
-	ldd @2, Z+@0
-	ldd @1, Z+@0+1
+	.if @0 <= 0x3E
+		ldd @2, Y+@0
+		ldd @1, Y+@0+1
+	.else
+		subi YL, low(-@0)
+		sbci YH, high(-@0)
+		ld @2, Y
+		ldd @1, Y+1
+		subi YL, low(@0)
+		sbci YH, high(@0)
+	.endif
  .endm
 
- .macro THIS_ST; @0 - field offcet; @1 - reg
-	ldi R16, low(@1)
-	st Y+@0, R16
+ .macro THIS_WLD; @0 - field offcet; @1 - regH,@2 - regL
+	.if @0 <= 0x3E
+		ldd @2, Z+@0
+		ldd @1, Z+1+@0
+	.else
+		subi ZL, low(-@0)
+		sbci ZH, high(-@0)
+		ld @2, Z
+		ldd @1, Z+1
+		subi ZL, low(@0)
+		sbci ZH, high(@0)
+	.endif
  .endm
 
  .macro THIS_WST; @0 - field offcet; @1 - regH,@2 - regL
-	ldd @2, Y+@0
-	ldd @1,Y+@0+1
+	.if @0 <= 0x3E
+		std Z+@0, @2
+		std Z+1+@0, @1
+	.else
+		subi ZL, low(-@0)
+		sbci ZH, high(-@0)
+		st Z, @2
+		std Z+1, @1
+		subi ZL, low(@0)
+		sbci ZH, high(@0)
+	.endif
  .endm
 
- .macro _ENTER ; paramsize; stacksize
-	_STACK @1+2, 3
-	_STACK_TO_Y @0+2+@1
-	movw ZH:ZL, thisH:thisL
+ .macro SETTER
+		BEGIN_TINY
+				PARAM_WLD 0x00, AH, AL
+				THIS_WST @0, AH, AL
+		END_TINY
  .endm
 
- .macro _LEAVE
-
-	_UNSTACK @0+2, 3
-
+ .macro GETTER
+		BEGIN_TINY
+				THIS_WLD 0x00, AH, AL
+				movw RH:RL,AH:AL
+		END_TINY
  .endm
 
  .CSEG
@@ -83,13 +135,13 @@
 	.def tmpL = R16
 	.def sizeH = R19
 	.def sizeL = R18
-						XPUSH Ar|Br|Xr|Zr|Yr
+
+	BEGIN_SMALL
 
 						clr sizeH
 						clr sizeL
 
-						ld tmpL, Y
-						ld tmpH, -Y
+						movw tmpH:tmpL, typeH:typeL
 
  calcSize:				movw ZH:ZL, tmpH:tmpL
 						; load size to temp
@@ -110,26 +162,30 @@
 						brne calcSize
 
 						;allocate memory
-						push sizeL
 						push sizeH
+						push sizeL
 						call memory_allocate
-						pop R16
-						pop R16
+						pop sizeL
+						pop sizeH
 
-						movw newH:newL, XH:XL
-
-						; call ctor
-						ld tmpL, Y
-						ldd tmpH, Y+1
-						movw ZH:ZL, tmpH:tmpL
-
+						;load ctor pointer
+						movw ZH:ZL, typeH:typeL
 						subi ZL, low(-metaSize)
 						sbci ZH, high(-metaSize)
+						lsr ZL
+						lsr ZH
+						brcc callCtor
+						sbr ZL,0b10000000
+						
+callCtor:				
 
+						movw PH:PL, RH:RL
+						movw AH:AL, RH:RL
 						icall
+						movw RH:RL, AH:AL
+	END_SMALL
 
-						XPOP Ar|Br|Xr|Zr|Yr
-						ret
+
  #endif  /* _OBJECT_INC_ */
 
  

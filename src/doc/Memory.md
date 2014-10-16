@@ -13,6 +13,15 @@ stack:
 	CommonRegisters+AddressingRegisters
 	Variables
 
+P - R14-15 - pointer (this or type pointers)
+Q - R12-13
+R - R10-11 - wreturn
+S - R8-9
+T - R6-7 - temp
+U - R4-5
+V - R2-3
+W - R0-1
+
 A - R16, R17
 B - R18, R19
 C - R20, R21

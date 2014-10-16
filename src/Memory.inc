@@ -11,157 +11,130 @@
 
  .CSEG
  memory_init:
- .set stackSize = 3
- .def temp = R16
-					push XL
-					push XH
-					push temp
+	BEGIN_TINY
 
-					ldi XH, high(SRAM_START)
-					ldi XL, low(SRAM_START)
+		ldi XH, high(SRAM_START)
+		ldi XL, low(SRAM_START)
 
-					/*clr temp
-					st X+, temp*/
+		; dw next block pointer (ramend)
+		ldi AL, low(RAMEND)
+		st X+, AL
+		ldi AL, high(RAMEND)
+		st X+, AL
 
-					; dw next block pointer (ramend)
-					ldi temp, low(RAMEND)
-					st X+, temp
-					ldi temp, high(RAMEND)
-					st X+, temp
+		;next dw is prev==next - block is free
+		ldi AL, low(RAMEND)
+		st X+, AL
+		ldi AL, high(RAMEND)
+		st X+, AL
 
-					;next dw is prev==next - block is free
-					ldi temp, low(RAMEND)
-					st X+, temp
-					ldi temp, high(RAMEND)
-					st X+, temp
-
-					pop temp
-					pop XH
-					pop XL
-
- ret
+	END_TINY
 
  memory_allocate:; dw size
- .set paramSize = 2
- .set stackSize = 14
-
- .def nextL = R18
- .def nextH = R19
-
- .def prevPrevL = R20
- .def prevPrevH = R21
-
- .def sizeL = R22
- .def sizeH = R23
-
- .def prevL = R16
- .def prevH = R17
-
- .def curL = R24
- .def curH = R25
+ // A - cur, B - next, C - prev, D -prev.prev, E - size
 				
-				XPUSH Ar|Br|Cr|Dr|Er|Xr|Yr|Zr
+				BEGIN
 
 				; load size from stack
-				ld sizeL, Y
-				ld sizeH, -Y
+				ld EL, Y+
+				ld EH, Y
 
 				; start from the begining but skip first byte (invalid pointer reference)
-				ldi nextH, high(SRAM_START)
-				ldi nextL, low(SRAM_START)
+				ldi BH, high(SRAM_START)
+				ldi BL, low(SRAM_START)
 
-				clr curH
-				clr curL
+				clr AH
+				clr AL
 
 checkBlock:
 				; if end of memory, then NoMemory error
 
-				ldi prevPrevH, high(RAMEND)
-				ldi prevPrevL, low(RAMEND)
+				ldi DH, high(RAMEND)
+				ldi DL, low(RAMEND)
 
-				cp prevPrevL, nextL
-				cpc prevPrevH, nextH
+				cp DL, BL
+				cpc DH, BH
 
 				brcs noMemory
 
 				; goto current block
-				movw XH:XL, nextH:nextL
+				movw XH:XL, BH:BL
 				; store pointer to previous block
-				movw prevPrevH:prevPrevL,curH:curL
+				movw DH:DL,AH:AL
 				; store pointer to current block
-				movw curH:curL, nextH:nextL
+				movw AH:AL, BH:BL
 				
 				; load pointers to next block and prev block
-				ld nextL, X+
-				ld nextH, X+
-				ld prevL, X+
-				ld prevH, X+
+				ld BL, X+
+				ld BH, X+
+				ld CL, X+
+				ld CH, X+
 
 				; if prev == next then block is free
 
-				cp prevL, nextL
+				cp CL, BL
 				brne checkBlock
-				cp prevH, nextH
+				cp CH, BH
 				brne checkBlock
 
 				; try to allocate
  tryAllocate:
 				; calculate newNext pointer to X
 
-				add XL, sizeL
-				adc XH, sizeH
+				add XL, EL
+				adc XH, EH
 
 				; compare new pointer with next
 
-				cp nextL, XL
-				cpc nextH, XH
+				cp BL, XL
+				cpc BH, XH
 				
 				; if X>next, then check next block else allocate
 				brcs checkBlock
 
  allocate:
 				; if next block is equal to next pointer then just set Prev equal to prevPrev
-				subi nextL,low(headerSize)
-				sbci nextH, high(headerSize)
+				subi BL,low(headerSize)
+				sbci BH, high(headerSize)
 
-				cp XL, nextL
-				cpc XH, nextH
+				cp XL, BL
+				cpc XH, BH
 
 				brcs allocateNew
 
-				movw XH:XL, curH:curL
+				movw XH:XL, AH:AL
 
 				subi XL, low(-pointerSize)
 				sbci XH, high(-pointerSize)
 
-				st X+ , prevPrevL
-				st X , prevPrevH
-				movw XH:XL, curH:curL
+				st X+ , DL
+				st X , DH
+				movw XH:XL, AH:AL
 
 				rjmp exit
 
  allocateNew:	
-				subi nextL, low(-headerSize)
-				sbci nextH, high(-headerSize)
+				subi BL, low(-headerSize)
+				sbci BH, high(-headerSize)
 				; set x.next = x.prev = next - free block
-				st X+, nextL
-				st X+, nextH
-				st X+, nextL
-				st X+, nextH
+				st X+, BL
+				st X+, BH
+				st X+, BL
+				st X+, BH
 
 				; set Prev pointer equal to PrevPrev
 				
-				movw nextH:nextL, XH:XL
-				subi nextL, low(headerSize)
-				sbci nextH, high(headerSize)
+				movw BH:BL, XH:XL
+				subi BL, low(headerSize)
+				sbci BH, high(headerSize)
 
-				movw XH:XL, curH:curL
-				st X+, nextL
-				st X+, nextH
+				movw XH:XL, AH:AL
+				st X+, BL
+				st X+, BH
 
-				st X+, prevPrevL
-				st X, prevPrevH
-				movw XH:XL, curH:curL
+				st X+, DL
+				st X, DH
+				movw XH:XL, AH:AL
 
 				rjmp exit
  noMemory:
@@ -170,10 +143,10 @@ checkBlock:
  exit:
 				subi XL, low(-headerSize)
 				sbci XH, high(-headerSize)
-				movw retH:retL, XH:XL
 
-				XPOP Ar|Br|Cr|Dr|Er|Xr|Yr|Zr
- ret
+				movw RH:RL, XH:XL
+
+				END
 
  memory_destroy: ; dw pointer
  .set paramSize = 2

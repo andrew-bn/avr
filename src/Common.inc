@@ -7,9 +7,12 @@
 
 #ifndef _COMMON_INC_
 #define _COMMON_INC_
-
- .def retH = R15
- .def retL = R14
+ .def PH = R15
+ .def PL = R14
+ .def TH = R7
+ .def TL = R6
+ .def RH = R11
+ .def RL = R10
 
  .equ Ar = 1
  .def AH = R17
@@ -33,31 +36,32 @@
  .equ pointerSize = 2
 
  .macro XPOP ; registers
-	.if (@0 && Zr) == Zr
-		pop AH
+	.if (@0 & Zr) == Zr
+		pop ZH
+		pop ZL
 	.endif
 
-	.if (@0 && Xr) == Xr
+	.if (@0 & Xr) == Xr
 		pop XH
 		pop XL
 	.endif
-	.if (@0 && Er) == Er
+	.if (@0 & Er) == Er
 		pop EH
 		pop EL
 	.endif
-	.if (@0 && Dr) == Dr
+	.if (@0 & Dr) == Dr
 		pop DH
 		pop DL
 	.endif
-	.if (@0 && Cr) == Cr
+	.if (@0 & Cr) == Cr
 		pop CH
 		pop CL
 	.endif
-	.if (@0 && Br) == Br
+	.if (@0 & Br) == Br
 		pop BH
 		pop BL
 	.endif
-	.if (@0 && Ar) == Ar
+	.if (@0 & Ar) == Ar
 		pop AH
 	.endif
 	pop YH
@@ -105,8 +109,8 @@
 	; recalculate Y <= StackPointer
 	in YH, SPH
 	in YL, SPL
-	subi YL, low(-(6+(@0 && Ar)+(@0 && Br)*2)+(@0 && Cr)*2+(@0 && Dr)*2+(@0 && Er)*2+(@0 && Xr)*2+(@0 && Zr)*2);+ CP, SREG, YH, YL, R16
-	sbci YH, high(-(6+(@0 && Ar)+(@0 && Br)*2)+(@0 && Cr)*2+(@0 && Dr)*2+(@0 && Er)*2+(@0 && Xr)*2+(@0 && Zr)*2);+ CP, SREG, YH, YL, R16
+	subi YL, low (-(1+6+((@0 & Ar)==Ar)+((@0 & Br)==Br)*2+((@0 & Cr)==Cr)*2+((@0 & Dr)==Dr)*2+((@0 & Er)==Er)*2+((@0 & Xr)==Xr)*2+((@0 & Zr)==Zr)*2)); SREG, YH, YL, R16, CP
+	sbci YH, high(-(1+6+((@0 & Ar)==Ar)+((@0 & Br)==Br)*2+((@0 & Cr)==Cr)*2+((@0 & Dr)==Dr)*2+((@0 & Er)==Er)*2+((@0 & Xr)==Xr)*2+((@0 & Zr)==Zr)*2)); SREG, YH, YL, R16, CP
  .endm
 
  .macro _STACK_TO_Y
@@ -219,6 +223,33 @@
 	out SREG,R16
 	pop R16
 
+ .endm
+
+ .macro BEGIN
+	XPUSH Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
+	movw ZH:ZL, PH:PL
+ .endm
+ .macro END
+	XPOP Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
+	ret
+ .endm
+
+ .macro BEGIN_SMALL
+	XPUSH Ar+Br+Cr+Xr+Zr+Yr
+	movw ZH:ZL, PH:PL
+ .endm
+ .macro END_SMALL
+	XPOP Ar+Br+Cr+Xr+Zr+Yr
+	ret
+ .endm
+
+ .macro BEGIN_TINY
+	XPUSH Ar+Xr+Zr+Yr
+	movw ZH:ZL, PH:PL
+ .endm
+ .macro END_TINY
+	XPOP Ar+Xr+Zr+Yr
+	ret
  .endm
 
 #endif  /* _COMMON_INC_ */

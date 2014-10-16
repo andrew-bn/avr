@@ -17,8 +17,13 @@
 					ldi R16, high(RAMEND)
 					out SPH, R16
 
-					XPUSH Ar+Br
+					call memory_init
+
 					NEW listItem
+					movw AH:AL, RH:RL
+					XCALLIW AH, AL, listItem_setNext, 0x3456
+					XCALL AH,AL, listItem_getNext
+
 
 tmp2:				rjmp tmp2
 
@@ -32,9 +37,9 @@ tmp2:				rjmp tmp2
 					push R16
 
 					call memory_allocate
-					movw R19:R18, retH:retL
+					movw R19:R18, RH:RL
 					call memory_allocate
-					movw R21:R20, retH:retL
+					movw R21:R20, RH:RL
 					call memory_allocate
 					pop R16
 					pop R16
@@ -48,8 +53,8 @@ tmp2:				rjmp tmp2
 					call memory_destroy;1
 					pop R16
 					pop R16
-					push retL
-					push retH
+					push RL
+					push RH
 					call memory_destroy;3
 tmp:				rjmp tmp
 
