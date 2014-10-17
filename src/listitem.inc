@@ -5,6 +5,7 @@
  *   Author: user
  */ 
  .include "object.inc"
+ .include "list.inc"
 
  #ifndef _LISTITEM_INC_
  #define _LISTITEM_INC_
@@ -31,9 +32,9 @@
 	listItem_ctor:
 		BEGIN_TINY
 					clr AL
-					THIS_WST _next, AL,AL
-					THIS_WST _prev, AL,AL
-					THIS_WST _data, AL,AL
+					FIELD_WST _next, AL,AL
+					FIELD_WST _prev, AL,AL
+					FIELD_WST _data, AL,AL
 		END_TINY
 
 

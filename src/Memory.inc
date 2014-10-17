@@ -148,10 +148,7 @@ checkBlock:
 
 				END
 
- memory_destroy: ; dw pointer
- .set paramSize = 2
- .set stackSize = 10+4
-
+ memory_destroy:
  .def curH = R17
  .def curL = R16
  .def nextL = R18
@@ -162,13 +159,10 @@ checkBlock:
  .def tempNextH = R23
  .def tempPrevL = R24
  .def tempPrevH = R25
-
-				_STACK stackSize,2
-				_STACK_TO_Y stackSize + paramSize
-
+	
+	BEGIN
 				; load pointer from stack
-				ld curL, Y
-				ld curH, -Y
+				movw curH:curL, PH:PL
 
 				subi curL, low(headerSize)
 				sbci curH, high(headerSize)
@@ -236,7 +230,8 @@ editNext:		movw XH:XL, nextH:nextL
 				st X+, curL
 				st X+, curH
 
- destr_exit:	_UNSTACK stackSize,2
+ destr_exit:
 
- ret
+END
+
 #endif  /* _MEMORY_INC_ */

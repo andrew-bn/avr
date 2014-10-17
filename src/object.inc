@@ -34,35 +34,40 @@
 	push @3
 	push @4
 	call @2
+	pop TL
+	pop TL
  .endm
 
  .macro XCALLIW ; pointer to object; method; Wparam
 
-	push AL
-	ldi AL, high(@3)
-	mov TH,AL
-	ldi AL, low(@3)
 	mov TL, AL
-	pop AL
+	ldi AL, high(@3)
+	push AL
+	ldi AL, low(@3)
+	push AL
+	mov AL, TL
 
-	movw PH:PL, @0:@1
-	push TH
-	push TL
+	movw PH:PL, @0: @1
 	call @2
-
+	pop TL
+	pop TL
  .endm
 
- .macro NEW
-		push R16
-		ldi R16, low(2*@0)
-		mov typeL, R16
-		ldi R16, high(2*@0)
-		mov typeH, R16
-		pop R16
+ .macro NEW ; memory pointer
+
+		mov TL, AL
+		ldi AL, low(2*@0)
+		mov PL, AL
+		ldi AL, high(2*@0)
+		mov PH, AL
+		mov AL, TL
+
 		call _object_new
  .endm
 
- .macro DEL
+ .macro DEL; High:Low of object pointer
+		movw PH:PL, @0:@1
+		call memory_destroy
  .endm
 
  .macro PARAM_WLD; @ param offcet
@@ -79,7 +84,7 @@
 	.endif
  .endm
 
- .macro THIS_WLD; @0 - field offcet; @1 - regH,@2 - regL
+ .macro FIELD_WLD; @0 - field offcet; @1 - regH,@2 - regL
 	.if @0 <= 0x3E
 		ldd @2, Z+@0
 		ldd @1, Z+1+@0
@@ -93,7 +98,7 @@
 	.endif
  .endm
 
- .macro THIS_WST; @0 - field offcet; @1 - regH,@2 - regL
+ .macro FIELD_WST; @0 - field offcet; @1 - regH,@2 - regL
 	.if @0 <= 0x3E
 		std Z+@0, @2
 		std Z+1+@0, @1
@@ -110,13 +115,13 @@
  .macro SETTER
 		BEGIN_TINY
 				PARAM_WLD 0x00, AH, AL
-				THIS_WST @0, AH, AL
+				FIELD_WST @0, AH, AL
 		END_TINY
  .endm
 
  .macro GETTER
 		BEGIN_TINY
-				THIS_WLD 0x00, AH, AL
+				FIELD_WLD 0x00, AH, AL
 				movw RH:RL,AH:AL
 		END_TINY
  .endm
