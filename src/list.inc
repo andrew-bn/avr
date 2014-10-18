@@ -17,6 +17,12 @@
  .equ _list_size = _tail + pointerSize
 
  list: CLASS object, _list_size
+	 list_ctor:
+		BEGIN_TINY
+			clr AL
+			FIELD_WST _head, AL, AL
+			FIELD_WST _tail, AL, AL
+		END_TINY
 
  list_addData:
 	.equ list_addData_data = 0
@@ -27,11 +33,11 @@
 
 		NEW listItem
 		movw CH:CL, RH:RL
-		XCALLW CH, CL, listItem_setData, AH, AL
-		XCALLW CH, CL, listItem_setPrev, BH, BL
+		XCALLW CH:CL, listItem_setData, AH, AL
+		XCALLW CH:CL, listItem_setPrev, BH, BL
 
 		; set next for Tail
-		XCALLW BH, BL, listItem_setNext, CH, CL
+		XCALLW BH:BL, listItem_setNext, CH, CL
 		
 	END_SMALL
 
@@ -43,7 +49,7 @@
 
 		list_removeData_check:	
 							
-							XCALL CH, CL, listItem_getData
+							XCALL CH:CL, listItem_getData
 							movw BH:BL, RH:RL
 
 							cp AH, BH
@@ -55,7 +61,7 @@
 
 		list_removeData_next:
 							
-							XCALL CH, CL, listItem_getNext
+							XCALL CH:CL, listItem_getNext
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL
@@ -66,15 +72,15 @@
 
 		list_removeData_remove: 
 
-							XCALL CH, CL, listItem_getPrev
+							XCALL CH:CL, listItem_getPrev
 							movw AH:AL, CH:CL
-							XCALL CH, CL, listItem_getNext
+							XCALL CH:CL, listItem_getNext
 							movw BH:BL, CH:CL
 
-							XCALLW AH,AL, listItem_setNext, BH, BL
-							XCALLW BH,BL, listItem_setPrev, AH, AL
+							XCALLW AH:AL, listItem_setNext, BH, BL
+							XCALLW BH:BL, listItem_setPrev, AH, AL
 
-							DEL CH, CL
+							VCALL CH:CL, object_destroy
 
 		list_removeData_exit:
 	END
@@ -89,7 +95,9 @@
 							ldi BL, -1
 
 		list_getItem_check:
-							adiw BH:BL, 1
+							subi BL, -1
+							sbci BH, 0
+
 							cp AH, BH
 							brne list_getItem_next
 							cp AL, BL
@@ -101,7 +109,7 @@
 
 		list_getItem_next:
 							
-							XCALL CH, CL, listItem_getNext
+							XCALL CH:CL, listItem_getNext
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL
@@ -124,19 +132,21 @@
 							ldi BL, -1
 
 		list_getData_check:	
-							adiw BH:BL, 1
+							subi BL, -1
+							sbci BH, 0
+
 							cp AH, BH
 							brne list_getData_next
 							cp AL, BL
 							brne list_getData_next
 
-							XCALL CH, CL, listItem_getData
+							XCALL CH:CL, listItem_getData
 							; in R we have reference to data
 							rjmp list_getData_exit
 
 		list_getData_next:
 							
-							XCALL CH, CL, listItem_getNext
+							XCALL CH:CL, listItem_getNext
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL

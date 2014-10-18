@@ -19,7 +19,14 @@
  .equ _listItem_size = _data + pointerSize
 
  listItem: CLASS object, _listItem_size
-	
+	listItem_ctor:
+		BEGIN_TINY
+					clr AL
+					FIELD_WST _next, AL,AL
+					FIELD_WST _prev, AL,AL
+					FIELD_WST _data, AL,AL
+		END_TINY
+
 	listItem_setNext: SETTER _next
 	listItem_getNext: GETTER _next
 	
@@ -28,14 +35,6 @@
 
 	listItem_setData: SETTER _data
 	listItem_getData: GETTER _data
-
-	listItem_ctor:
-		BEGIN_TINY
-					clr AL
-					FIELD_WST _next, AL,AL
-					FIELD_WST _prev, AL,AL
-					FIELD_WST _data, AL,AL
-		END_TINY
 
 
  #endif /* _LISTITEM_INC_ */

@@ -21,9 +21,9 @@
 
 					NEW listItem
 					movw AH:AL, RH:RL
-					XCALLIW AH, AL, listItem_setNext, 0x3456
-					XCALL AH, AL, listItem_getNext
-					DEL AH, AL
+					XCALLIW AH:AL, listItem_setNext, 0x3456
+					XCALL AH:AL, listItem_getNext
+					VCALL AH:AL, object_destroy
 
 tmp2:				rjmp tmp2
 

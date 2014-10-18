@@ -10,30 +10,43 @@
  .include "common.inc"
  .include "memory.inc"
 
- .def thisH = R15
- .def thisL = R14
- .def newH = R15
- .def newL = R14
- .def typeH = R15
- .def typeL = R14
-
  .equ metaSize = 4;
+
+ .def thisH = R31
+ .def thisL = R30
 
  .macro CLASS
 	.dw @1
 	.dw (@0 * 2)
  .endm
-
+ .macro VCALL ; pointer to object; offcet of method pointer
+	push ZH
+	push ZL
+	push AH
+	push AL
+	movw thisH:thisL, @0 ; load this
+	FIELD_WLD @1, AH, AL
+	movw PH:PL, @0
+	movw ZH:ZL, AH: AL
+	pop AL
+	pop AH
+	icall
+	pop ZL
+	pop ZH
+ .endm
+ .macro THIS
+	XCALL thisH:thisL, @0
+ .endm
  .macro XCALL ; pointer to object; method
-	movw PH:PL, @0:@1
-	call @2
+	movw PH:PL, @0
+	call @1
  .endm
 
  .macro XCALLW ; pointer to object; method; Wparam
-	movw PH:PL, @0:@1
+	movw PH:PL, @0
+	push @2
 	push @3
-	push @4
-	call @2
+	call @1
 	pop TL
 	pop TL
  .endm
@@ -41,14 +54,14 @@
  .macro XCALLIW ; pointer to object; method; Wparam
 
 	mov TL, AL
-	ldi AL, high(@3)
+	ldi AL, high(@2)
 	push AL
-	ldi AL, low(@3)
+	ldi AL, low(@2)
 	push AL
 	mov AL, TL
 
-	movw PH:PL, @0: @1
-	call @2
+	movw PH:PL, @0
+	call @1
 	pop TL
 	pop TL
  .endm
@@ -63,11 +76,6 @@
 		mov AL, TL
 
 		call _object_new
- .endm
-
- .macro DEL; High:Low of object pointer
-		movw PH:PL, @0:@1
-		call memory_destroy
  .endm
 
  .macro PARAM_WLD; @ param offcet
@@ -111,7 +119,39 @@
 		sbci ZH, high(@0)
 	.endif
  .endm
-
+  .macro FIELD_WSTI; @0 - field offcet; @1 wconst
+	mov TL, AL
+	.if @0 <= 0x3E
+		ldi AL, low(@1)
+		std Z+@0, AL
+		ldi AL, high(@1)
+		std Z+1+@0, AL
+	.else
+		subi ZL, low(-@0)
+		sbci ZH, high(-@0)
+		ldi AL, low(@1)
+		st Z, AL
+		ldi AL, high(@1)
+		std Z+1, AL
+		subi ZL, low(@0)
+		sbci ZH, high(@0)
+	.endif
+	mov AL, TL
+ .endm
+  .macro FIELD_ST; @0 - field offcet; @1 - regH,@2 - regL
+	.if @0 <= 0x3E
+		std Z+@0, @1
+	.else
+		subi ZL, low(-@0)
+		sbci ZH, high(-@0)
+		st Z, @1
+		subi ZL, low(@0)
+		sbci ZH, high(@0)
+	.endif
+ .endm
+ .macro OVERRIDE
+	FIELD_WSTI @0, @1
+ .endm
  .macro SETTER
 		BEGIN_TINY
 				PARAM_WLD 0x00, AH, AL
@@ -129,11 +169,19 @@
  .CSEG
 
  .equ _object_offcet = 0x0
- .equ _object_size = 0x00
+ .equ object_destroy = _object_offcet
+ .equ _object_size = object_destroy+pointerSize
 
  object: CLASS 0x00, _object_size
 
- object_ctor:			ret
+ object_ctor:
+	BEGIN_TINY
+		OVERRIDE object_destroy, object_destructor
+	END_TINY
+
+ object_destructor:
+		call memory_destroy
+	ret
 
  _object_new:
 	.def tmpH = R17
@@ -146,7 +194,7 @@
 						clr sizeH
 						clr sizeL
 
-						movw tmpH:tmpL, typeH:typeL
+						movw tmpH:tmpL, PH:PL
 
  calcSize:				movw ZH:ZL, tmpH:tmpL
 						; load size to temp
@@ -174,7 +222,7 @@
 						pop sizeH
 
 						;load ctor pointer
-						movw ZH:ZL, typeH:typeL
+						movw ZH:ZL, PH:PL
 						subi ZL, low(-metaSize)
 						sbci ZH, high(-metaSize)
 						lsr ZL

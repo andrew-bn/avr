@@ -65,6 +65,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EmptyTask.inc">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="list.inc">
       <SubType>Code</SubType>
     </Compile>
@@ -87,6 +90,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="object.inc">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="task.inc">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
