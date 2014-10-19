@@ -23,7 +23,7 @@
 			FIELD_WST _tail, AL, AL
 			OVERRIDE object_destroy, list_destructor
 		END_TINY
-
+ list_getHead: GETTERW _head
  list_destructor:
 	BEGIN_SMALL
 		
@@ -49,66 +49,59 @@
 
 	END_SMALL
 
- list_addData:
-	.equ list_addData_data = 0
+ list_add: ; A - item pointer; B - tail pointer
+	.equ list_add_item = 0
 	BEGIN_SMALL
 
-				PARAM_WLD list_addData_data, AH, AL
+				PARAM_WLD list_add_item, AH, AL
 				FIELD_WLD _tail, BH, BL
 
-				NEW listItem
-				movw CH:CL, RH:RL
-				XCALLW CH:CL, listItem_setData, AH, AL
-				XCALLW CH:CL, listItem_setPrev, BH, BL
+				XCALLW AH:AL, listItem_setPrev, BH, BL
 
 				; if this is the first element then set Tail and Head
 				tst BH
-				brne list_addData_setNext
+				brne list_add_setNext
 				tst BL
-				brne list_addData_setNext
+				brne list_add_setNext
 
-				FIELD_WST _tail, CH, CL
-				FIELD_WST _head, CH, CL
+				FIELD_WST _tail, AH, AL
+				FIELD_WST _head, AH, AL
 
-				rjmp list_addData_exit
+				rjmp list_add_exit
 
-	list_addData_setNext:
+	list_add_setNext:
 				; set next for Tail
-				XCALLW BH:BL, listItem_setNext, CH, CL
+				XCALLW BH:BL, listItem_setNext, AH, AL
+				FIELD_WST _tail, AH, AL
 
-	list_addData_exit:
+	list_add_exit:
 	END_SMALL
 
- list_removeData:
- .equ list_removeData_data = 0; B - current data; C-current item; A - data to find; D - temp
+ list_remove:
+ .equ list_remove_item = 0; C-current item; A - item to find; D - temp
 	BEGIN
-							PARAM_WLD list_removeData_data, AH, AL
+							PARAM_WLD list_remove_item, AH, AL
 							FIELD_WLD _head, CH, CL
 
-		list_removeData_check:	
-							
-							XCALL CH:CL, listItem_getData
-							movw BH:BL, RH:RL
+		list_remove_check:
+							cp AH, CH
+							brne list_remove_next
+							cp AL, CL
+							brne list_remove_next
 
-							cp AH, BH
-							brne list_removeData_next
-							cp AL, BL
-							brne list_removeData_next
+							rjmp list_remove_remove
 
-							rjmp list_removeData_remove
-
-		list_removeData_next:
-							
+		list_remove_next:
 							XCALL CH:CL, listItem_getNext
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL
-							brne list_removeData_check
+							brne list_remove_check
 							tst CH
-							brne list_removeData_check
-							rjmp list_removeData_exit
+							brne list_remove_check
+							rjmp list_remove_exit
 
-		list_removeData_remove: 
+		list_remove_remove: 
 
 							XCALL CH:CL, listItem_getPrev
 							movw AH:AL, CH:CL
@@ -118,12 +111,10 @@
 							XCALLW AH:AL, listItem_setNext, BH, BL
 							XCALLW BH:BL, listItem_setPrev, AH, AL
 
-							VCALL CH:CL, object_destroy
-
-		list_removeData_exit:
+		list_remove_exit:
 	END
 
- list_getItem:
+ list_get:
 	.equ _index = 0; B - current index; C-current item; A - index to find; D - temp
 	BEGIN
 							PARAM_WLD _index, AH, AL
@@ -132,70 +123,32 @@
 							ldi BH, -1
 							ldi BL, -1
 
-		list_getItem_check:
+		list_get_check:
 							subi BL, -1
 							sbci BH, 0
 
 							cp AH, BH
-							brne list_getItem_next
+							brne list_get_next
 							cp AL, BL
-							brne list_getItem_next
+							brne list_get_next
 
 							movw RH:RL, CH:CL
 
-							rjmp list_getItem_exit
+							rjmp list_get_exit
 
-		list_getItem_next:
+		list_get_next:
 							
 							XCALL CH:CL, listItem_getNext
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL
-							brne list_getItem_check
+							brne list_get_check
 							tst CH
-							brne list_getItem_check
+							brne list_get_check
 							; no item found
 							clr RH
 							clr RL
-		list_getItem_exit: 
-	END
-
- list_getData:
-	.equ list_getData_index = 0; B - current index; C-current item; A - index to find; D - temp
-	BEGIN
-							PARAM_WLD list_getData_index, AH, AL
-							FIELD_WLD _head, CH, CL
-							
-							ldi BH, -1
-							ldi BL, -1
-
-		list_getData_check:	
-							subi BL, -1
-							sbci BH, 0
-
-							cp AH, BH
-							brne list_getData_next
-							cp AL, BL
-							brne list_getData_next
-
-							XCALL CH:CL, listItem_getData
-							; in R we have reference to data
-							rjmp list_getData_exit
-
-		list_getData_next:
-							
-							XCALL CH:CL, listItem_getNext
-							; in R we have reference to item
-							movw CH:CL, RH:RL
-							tst CL
-							brne list_getData_check
-							tst CH
-							brne list_getData_check
-							; no item found
-							clr RH
-							clr RL
-		list_getData_exit: 
-
+		list_get_exit: 
 	END
 
  #endif /* _LIST_INC_ */

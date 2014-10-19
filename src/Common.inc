@@ -13,6 +13,8 @@
  .def TL = R6
  .def RH = R11
  .def RL = R10
+ .def QH = R13
+ .def QL = R12
 
  .equ Ar = 1
  .def AH = R17

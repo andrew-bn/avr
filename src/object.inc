@@ -80,6 +80,7 @@
  .macro DEL ; memory pointer
 	VCALL @0, object_destroy
  .endm
+
  .macro PARAM_WLD; @ param offcet
 	.if @0 <= 0x3E
 		ldd @2, Y+@0
@@ -94,13 +95,37 @@
 	.endif
  .endm
 
+ 
+ .macro PARAM_LD; @ param offcet
+	.if @0 <= 0x3E
+		ldd @1, Y+@0
+	.else
+		subi YL, low(-@0)
+		sbci YH, high(-@0)
+		ld @1, Y
+		subi YL, low(@0)
+		sbci YH, high(@0)
+	.endif
+ .endm
+
+  .macro FIELD_LD; @0 - field offcet; @1 - reg
+	.if @0 <= 0x3E
+		ldd @1, Z+@0
+	.else
+		subi ZL, low(-@0)
+		sbci ZH,78 high(-@0)
+		ld @1, Z
+		subi ZL, low(@0)
+		sbci ZH, high(@0)
+	.endif
+ .endm
  .macro FIELD_WLD; @0 - field offcet; @1 - regH,@2 - regL
 	.if @0 <= 0x3E
 		ldd @2, Z+@0
 		ldd @1, Z+1+@0
 	.else
 		subi ZL, low(-@0)
-		sbci ZH, high(-@0)
+		sbci ZH,78 high(-@0)
 		ld @2, Z
 		ldd @1, Z+1
 		subi ZL, low(@0)
@@ -154,14 +179,26 @@
  .macro OVERRIDE
 	FIELD_WSTI @0, @1
  .endm
- .macro SETTER
+  .macro SETTER
+		BEGIN_TINY
+				PARAM_LD 0x00, AH
+				FIELD_ST @0, AH
+		END_TINY
+ .endm
+ .macro SETTERW
 		BEGIN_TINY
 				PARAM_WLD 0x00, AH, AL
 				FIELD_WST @0, AH, AL
 		END_TINY
  .endm
-
- .macro GETTER
+  .macro GETTER
+		BEGIN_TINY
+				FIELD_LD @0, AL
+				clr AH
+				movw RH:RL,AH:AL
+		END_TINY
+ .endm
+ .macro GETTERW
 		BEGIN_TINY
 				FIELD_WLD @0, AH, AL
 				movw RH:RL,AH:AL

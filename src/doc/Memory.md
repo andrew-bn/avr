@@ -14,7 +14,7 @@ stack:
 	Variables
 
 P - R14-15 - pointer (this or type pointers)
-Q - R12-13
+Q - R12-13 - pointer to task list
 R - R10-11 - wreturn
 S - R8-9
 T - R6-7 - temp
