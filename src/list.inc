@@ -11,34 +11,72 @@
  .include "listItem.inc"
  .CSEG
 
- .equ _list_offcet = _object_offcet+_object_size
- .equ _head = _list_offcet
+ .equ _head = _object_size
  .equ _tail = _head + pointerSize
  .equ _list_size = _tail + pointerSize
 
  list: CLASS object, _list_size
-	 list_ctor:
+ list_ctor:
 		BEGIN_TINY
 			clr AL
 			FIELD_WST _head, AL, AL
 			FIELD_WST _tail, AL, AL
+			OVERRIDE object_destroy, list_destructor
 		END_TINY
+
+ list_destructor:
+	BEGIN_SMALL
+		
+		FIELD_WLD _head, AH, AL
+
+		list_destructor_test:
+		tst AH
+		brne list_destructor_item
+		tst AL
+		breq list_destructor_this
+
+		list_destructor_item:
+		XCALL AH:AL, listItem_getNext
+		movw BH:BL, RH:RL
+		DEL AH:AL
+		movw AH:AL, BH:BL
+
+		rjmp list_destructor_test
+
+		list_destructor_this:
+
+		THIS object_destructor
+
+	END_SMALL
 
  list_addData:
 	.equ list_addData_data = 0
 	BEGIN_SMALL
 
-		PARAM_WLD list_addData_data, AH, AL
-		FIELD_WLD _tail, BH, BL
+				PARAM_WLD list_addData_data, AH, AL
+				FIELD_WLD _tail, BH, BL
 
-		NEW listItem
-		movw CH:CL, RH:RL
-		XCALLW CH:CL, listItem_setData, AH, AL
-		XCALLW CH:CL, listItem_setPrev, BH, BL
+				NEW listItem
+				movw CH:CL, RH:RL
+				XCALLW CH:CL, listItem_setData, AH, AL
+				XCALLW CH:CL, listItem_setPrev, BH, BL
 
-		; set next for Tail
-		XCALLW BH:BL, listItem_setNext, CH, CL
-		
+				; if this is the first element then set Tail and Head
+				tst BH
+				brne list_addData_setNext
+				tst BL
+				brne list_addData_setNext
+
+				FIELD_WST _tail, CH, CL
+				FIELD_WST _head, CH, CL
+
+				rjmp list_addData_exit
+
+	list_addData_setNext:
+				; set next for Tail
+				XCALLW BH:BL, listItem_setNext, CH, CL
+
+	list_addData_exit:
 	END_SMALL
 
  list_removeData:

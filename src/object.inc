@@ -26,7 +26,7 @@
 	push AL
 	movw thisH:thisL, @0 ; load this
 	FIELD_WLD @1, AH, AL
-	movw PH:PL, @0
+	movw PH:PL, thisH:thisL
 	movw ZH:ZL, AH: AL
 	pop AL
 	pop AH
@@ -77,7 +77,9 @@
 
 		call _object_new
  .endm
-
+ .macro DEL ; memory pointer
+	VCALL @0, object_destroy
+ .endm
  .macro PARAM_WLD; @ param offcet
 	.if @0 <= 0x3E
 		ldd @2, Y+@0
@@ -161,15 +163,14 @@
 
  .macro GETTER
 		BEGIN_TINY
-				FIELD_WLD 0x00, AH, AL
+				FIELD_WLD @0, AH, AL
 				movw RH:RL,AH:AL
 		END_TINY
  .endm
 
  .CSEG
 
- .equ _object_offcet = 0x0
- .equ object_destroy = _object_offcet
+ .equ object_destroy = 0x0
  .equ _object_size = object_destroy+pointerSize
 
  object: CLASS 0x00, _object_size
@@ -184,42 +185,19 @@
 	ret
 
  _object_new:
-	.def tmpH = R17
-	.def tmpL = R16
-	.def sizeH = R19
-	.def sizeL = R18
+	BEGIN_TINY
+						movw ZH:ZL, PH:PL
 
-	BEGIN_SMALL
-
-						clr sizeH
-						clr sizeL
-
-						movw tmpH:tmpL, PH:PL
-
- calcSize:				movw ZH:ZL, tmpH:tmpL
 						; load size to temp
-						LPM tmpL, Z+
-						LPM tmpH, Z+
-
-						; increment size
-						add sizeL, tmpL
-						adc sizeH, tmpH
-
-						;load next
-						LPM tmpL, Z+
-						LPM tmpH, Z+
-
-						tst tmpH
-						brne calcSize
-						tst tmpL
-						brne calcSize
+						LPM AL, Z+
+						LPM AH, Z+
 
 						;allocate memory
-						push sizeH
-						push sizeL
+						push AH
+						push AL
 						call memory_allocate
-						pop sizeL
-						pop sizeH
+						pop AL
+						pop AH
 
 						;load ctor pointer
 						movw ZH:ZL, PH:PL
@@ -229,14 +207,15 @@
 						lsr ZH
 						brcc callCtor
 						sbr ZL,0b10000000
-						
-callCtor:				
 
+callCtor:				
+						
 						movw PH:PL, RH:RL
 						movw AH:AL, RH:RL
+						XCALL AH:AL, object_ctor
 						icall
 						movw RH:RL, AH:AL
-	END_SMALL
+	END_TINY
 
 
  #endif  /* _OBJECT_INC_ */

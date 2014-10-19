@@ -9,9 +9,11 @@
  #define _EMPTYTASK_INC
 
  .include "object.inc"
+ .include "task.inc"
  .CSEG
 	
- emptyTask: CLASS task, 100
+ .equ _emptyTask_size = _task_size+2
+ emptyTask: CLASS task, _emptyTask_size
 	emptyTask_ctor:
 		BEGIN_TINY
 			THIS task_ctor

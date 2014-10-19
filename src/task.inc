@@ -9,9 +9,8 @@
 
  .include "object.inc"
  .CSEG
- 
- .equ _task_offcet = _object_offcet+_object_size
- .equ task_Run = _task_offcet
+
+ .equ task_Run = _object_size
  .equ _task_stack = task_Run + pointerSize
  .equ _task_state = _task_stack + pointerSize
  .equ _task_counter = _task_state + 1

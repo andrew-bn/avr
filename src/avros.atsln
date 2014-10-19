@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "avros", "avros.asmproj", "{AAB047DC-21F9-4B6B-BF4B-79E88918CA12}"
+Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "avr", "avr.asmproj", "{AAB047DC-21F9-4B6B-BF4B-79E88918CA12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

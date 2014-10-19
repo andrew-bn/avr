@@ -12,8 +12,7 @@
 
  .CSEG
 
- .equ _listItem_offcet = _object_offcet+_object_size
- .equ _next = _listItem_offcet
+ .equ _next = _object_size
  .equ _prev = _next + pointerSize
  .equ _data = _prev + pointerSize
  .equ _listItem_size = _data + pointerSize

@@ -12,9 +12,9 @@
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <Language>ASSEMBLY</Language>
     <AssemblyName>avros</AssemblyName>
-    <Name>avros</Name>
+    <Name>avr</Name>
     <RootNamespace>avros</RootNamespace>
-    <EntryFile>$(MSBuildProjectDirectory)\avros.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\avr.asm</EntryFile>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -74,13 +74,13 @@
     <Compile Include="listitem.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="avros.asm">
+    <Compile Include="avr.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="common.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="manager.inc">
+    <Compile Include="kernel.inc">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="memory.inc">
