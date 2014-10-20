@@ -26,12 +26,6 @@
 
  .endm
 
-
- .macro KERNEL_START
-	SETUP_SYSTIMER
-	sei
- .endm
-
 .CSEG
 ; interrupts
 .ORG $000  rjmp _RESET 
@@ -83,7 +77,7 @@ reti
 	.include "list.inc"
 	.include "listItem.inc"
 	.include "task.inc"
-
+	.include "taskManager.inc"
  dispatcherTimer:
 		push AL
 		push AH
@@ -133,6 +127,7 @@ reti
 		pop AH
 		pop AL
 	reti
+
 _RESET: ; setup stack
 		ldi R16, low(RAMEND)
 		out SPL, R16
@@ -141,6 +136,6 @@ _RESET: ; setup stack
 
 		call memory_init
 
-		NEW list
+		NEW taskManager
 		movw QH:QL, RH:RL
 _maintask:

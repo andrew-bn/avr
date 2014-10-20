@@ -16,11 +16,10 @@
  emptyTask: CLASS task, _emptyTask_size
 	emptyTask_ctor:
 		BEGIN_TINY
-			THIS task_ctor
 			OVERRIDE task_Run, emptyTask_Run
+			THIS task_ctor
 		END_TINY
 
 	emptyTask_Run:
-		BEGIN
-		END
+		ret
  #endif

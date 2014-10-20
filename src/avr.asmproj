@@ -95,6 +95,9 @@
     <Compile Include="task.inc">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="taskManager.inc">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="doc" />

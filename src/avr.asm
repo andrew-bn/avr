@@ -12,7 +12,7 @@ jmp avr_start
 .include "emptyTask.inc"
 avr_start:
  TASK_ADD emptyTask
- KERNEL_START
+ ;call kernel_start
 
 tmp2:				rjmp tmp2
 

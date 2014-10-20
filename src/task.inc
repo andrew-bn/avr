@@ -10,30 +10,46 @@
  .include "object.inc"
  .include "listItem.inc"
  .CSEG
- 
- .set _task_Running = 0x1
+ ; STATE
+ .set task_Running = 0x1
  .set _tast_Idle = 0x0
  .set _task_Wait = 0x2
  .set _task_Int = 0x3
 
  .equ task_Run = _listItem_size
  .equ _task_stack = task_Run + pointerSize
- .equ _task_state = _task_stack + pointerSize
- .equ _task_counter = _task_state + 1
- .equ _task_size = _task_counter + 2
+ .equ task_state = _task_stack + pointerSize
+ .equ task_counter = task_state + 1
+ .equ _task_cmdPointer = task_state + 2
+ .equ _task_stackMinSpace = _task_cmdPointer + pointerSize
+ .equ _task_size = _task_stackMinSpace + 20
 
  task: CLASS listItem, _task_size
  	task_ctor:
 		BEGIN_TINY
 					THIS listItem_ctor
+
 					clr AL
-					FIELD_WST task_Run, AL,AL
-					FIELD_WST _task_stack, AL,AL
-					FIELD_WST _task_counter, AL,AL
-					FIELD_ST _task_counter, AL
+					FIELD_WST task_counter, AL,AL
+
+					ldi AL, task_Running
+					FIELD_ST task_state, AL
+
+					FIELD_WLD task_Run, AH, AL
+					FIELD_WST _task_cmdPointer, AH, AL
+
+					call __object_size
+					add RL, thisL
+					adc RH, thisH
+					ldi AL, low(1)
+					sub RL, AL
+					ldi AL, high(1)
+					sbc RH, AL
+					FIELD_WST _task_stack, RH, RL
+
 		END_TINY
 
-	task_getState: GETTER _task_state
-	task_getCounter: GETTERW _task_counter
-	task_setCounter: SETTERW _task_counter
+	task_getState: GETTER task_state
+	task_getCounter: GETTERW task_counter
+	task_setCounter: SETTERW task_counter
  #endif

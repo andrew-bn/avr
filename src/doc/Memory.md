@@ -6,7 +6,10 @@ Offcet|Name           |Size(bytes)|Description
 4     |Block          |N          |
 
 ----------------
-
+Macroses
+FIELD_ LD - uses Z (this). no side effects
+GETTER - uses GET,exptects P as pointer to obj
+GET - @0 - pointer to obj, affects T, returns R
 stack:
 	Parameters
 	RetAddress
@@ -16,7 +19,7 @@ stack:
 P - R14-15 - pointer (this or type pointers)
 Q - R12-13 - pointer to task list
 R - R10-11 - wreturn
-S - R8-9
+S - R8-9 - temp
 T - R6-7 - temp
 U - R4-5
 V - R2-3

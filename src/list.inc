@@ -11,23 +11,23 @@
  .include "listItem.inc"
  .CSEG
 
- .equ _head = _object_size
- .equ _tail = _head + pointerSize
- .equ _list_size = _tail + pointerSize
+ .equ list_head = _object_size
+ .equ list_tail = list_head + pointerSize
+ .equ _list_size = list_tail + pointerSize
 
  list: CLASS object, _list_size
  list_ctor:
 		BEGIN_TINY
 			clr AL
-			FIELD_WST _head, AL, AL
-			FIELD_WST _tail, AL, AL
+			FIELD_WST list_head, AL, AL
+			FIELD_WST list_tail, AL, AL
 			OVERRIDE object_destroy, list_destructor
 		END_TINY
- list_getHead: GETTERW _head
+ list_getHead: GETTERW list_head
  list_destructor:
 	BEGIN_SMALL
 		
-		FIELD_WLD _head, AH, AL
+		FIELD_WLD list_head, AH, AL
 
 		list_destructor_test:
 		tst AH
@@ -54,7 +54,7 @@
 	BEGIN_SMALL
 
 				PARAM_WLD list_add_item, AH, AL
-				FIELD_WLD _tail, BH, BL
+				FIELD_WLD list_tail, BH, BL
 
 				XCALLW AH:AL, listItem_setPrev, BH, BL
 
@@ -64,15 +64,15 @@
 				tst BL
 				brne list_add_setNext
 
-				FIELD_WST _tail, AH, AL
-				FIELD_WST _head, AH, AL
+				FIELD_WST list_tail, AH, AL
+				FIELD_WST list_head, AH, AL
 
 				rjmp list_add_exit
 
 	list_add_setNext:
 				; set next for Tail
 				XCALLW BH:BL, listItem_setNext, AH, AL
-				FIELD_WST _tail, AH, AL
+				FIELD_WST list_tail, AH, AL
 
 	list_add_exit:
 	END_SMALL
@@ -81,7 +81,7 @@
  .equ list_remove_item = 0; C-current item; A - item to find; D - temp
 	BEGIN
 							PARAM_WLD list_remove_item, AH, AL
-							FIELD_WLD _head, CH, CL
+							FIELD_WLD list_head, CH, CL
 
 		list_remove_check:
 							cp AH, CH
@@ -118,7 +118,7 @@
 	.equ _index = 0; B - current index; C-current item; A - index to find; D - temp
 	BEGIN
 							PARAM_WLD _index, AH, AL
-							FIELD_WLD _head, CH, CL
+							FIELD_WLD list_head, CH, CL
 							
 							ldi BH, -1
 							ldi BL, -1

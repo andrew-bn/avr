@@ -191,35 +191,56 @@
 				FIELD_WST @0, AH, AL
 		END_TINY
  .endm
-  .macro GETTER
-		BEGIN_TINY
-				FIELD_LD @0, AL
-				clr AH
-				movw RH:RL,AH:AL
-		END_TINY
+
+ .macro GET; @0 pointer to obj, @1 - field
+		movw TH:TL, thisH:thisL; store this
+		movw thisH:thisL, @0; load this
+		FIELD_LD @1, RL; load field value
+		clr RH
+		movw thisH:thisL, TH:TL; restore this
+ .endm
+
+ .macro GETTER
+		GET PH:PL, @0
+		ret
+ .endm
+  .macro GETW; @0 pointer to obj, @1 - field
+		movw TH:TL, thisH:thisL; store this
+		movw thisH:thisL, @0; load this
+		FIELD_WLD @1, RH, RL; load field value
+		movw thisH:thisL, TH:TL; restore this
  .endm
  .macro GETTERW
-		BEGIN_TINY
-				FIELD_WLD @0, AH, AL
-				movw RH:RL,AH:AL
-		END_TINY
+		GETW PH:PL, @0
+		ret
  .endm
 
  .CSEG
 
  .equ object_destroy = 0x0
- .equ _object_size = object_destroy+pointerSize
+ .equ object_type = object_destroy + pointerSize
+ .equ _object_size = object_type + pointerSize
 
  object: CLASS 0x00, _object_size
 
  object_ctor:
 	BEGIN_TINY
+		FIELD_WST object_type, TH, TL
 		OVERRIDE object_destroy, object_destructor
 	END_TINY
 
  object_destructor:
 		call memory_destroy
 	ret
+
+ __object_size:
+	movw TH:TL, ZH:ZL
+	FIELD_WLD object_type, SH, SL
+	movw ZH:ZL, SH:SL
+	lpm RL, Z+
+	lpm RH, Z+1
+	movw ZH:ZL, TH:TL
+ ret
 
  _object_new:
 	BEGIN_TINY
@@ -246,9 +267,10 @@
 						sbr ZL,0b10000000
 
 callCtor:				
-						
+						movw TH:TL, PH:PL
 						movw PH:PL, RH:RL
 						movw AH:AL, RH:RL
+						
 						XCALL AH:AL, object_ctor
 						icall
 						movw RH:RL, AH:AL
