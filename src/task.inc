@@ -13,7 +13,7 @@
  ; STATE
  .set task_Running = 0x1
  .set _tast_Idle = 0x0
- .set _task_Wait = 0x2
+ .set task_Wait = 0x2
  .set _task_Int = 0x3
 
  .equ task_Run = _listItem_size
@@ -35,7 +35,8 @@
 					ldi AL, task_Running
 					FIELD_ST task_state, AL
 
-					FIELD_WLD task_Run, AH, AL
+					ldi AL, low(task_start)
+					ldi AH, high(task_start)
 					FIELD_WST _task_cmdPointer, AH, AL
 
 					call __object_size
@@ -52,4 +53,6 @@
 	task_getState: GETTER task_state
 	task_getCounter: GETTERW task_counter
 	task_setCounter: SETTERW task_counter
+	tast_start:
+	ret
  #endif

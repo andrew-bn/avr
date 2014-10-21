@@ -97,7 +97,7 @@ reti
 	dispatcherTimer_cnt:
 		movw AH:AL, RH:RL
 		XCALL AH:AL, task_getState
-		ldi EH, _task_Wait
+		ldi EH, task_Wait
 		cp RL, EH
 		brne dispatcherTimer_next
 		XCALL AH:AL, task_getCounter

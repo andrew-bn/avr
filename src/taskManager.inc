@@ -10,23 +10,29 @@
  taskManager: CLASS list, 0
 
  taskManager_nextTask: ; A - pointer to task
-	BEGIN
-		FIELD_WLD list_head, AH, AL
 
-		;if task_counter == 0
+		FIELD_WLD list_head, AH, AL
+ 
+ taskManager_nextTask_check:
+
+		;if task_counter == 0 then run task
 		GETW AH:AL, task_counter
 		tst RH
 		sbic SREG, 7 ; if rh not 0 then skip tst
 		tst RL
-		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_nextTask_next
-
-		GET AH:AL, task_state
-		; if task is running
-		cpi RL, task_Running
+		sbic SREG, 7 ; if rl == 0 then runTask
+		rjmp taskManager_nextTask_runTask
 
 taskManager_nextTask_next:
+		GETW AH:AL, listItem_next
+		movw AH:AL, RH:RL
+		tst RH
+		sbic SREG, 7 ; if rh not 0 then skip tst
+		tst RL
+		sbic SREG, 7 ; if rl not 0
+		rjmp taskManager_nextTask_check
 
-
-	END
+		FIELD_WLD list_head, AH, AL; load head again
+		rjmp taskManager_nextTask_check
+		ret
 #endif
