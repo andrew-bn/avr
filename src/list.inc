@@ -13,9 +13,9 @@
 
  .equ list_head = _object_size
  .equ list_tail = list_head + pointerSize
- .equ _list_size = list_tail + pointerSize
+ .equ list_size = list_tail + pointerSize
 
- list: CLASS object, _list_size
+ list: CLASS object, list_size
  list_ctor:
 		BEGIN_TINY
 			clr AL
@@ -104,13 +104,27 @@
 		list_remove_remove: 
 
 							XCALL CH:CL, listItem_getPrev
-							movw AH:AL, CH:CL
+							movw AH:AL, RH:RL
 							XCALL CH:CL, listItem_getNext
-							movw BH:BL, CH:CL
+							movw BH:BL, RH:RL
 
+							tst AH
+							brne list_remove_setNext
+							tst AL
+							breq list_remove_checkPrev
+
+		list_remove_setNext:
 							XCALLW AH:AL, listItem_setNext, BH, BL
+
+		list_remove_checkPrev:
+							tst BH
+							brne list_remove_setPrev
+							tst BL
+							breq list_remove_setNext
+		list_remove_setPrev:
 							XCALLW BH:BL, listItem_setPrev, AH, AL
 
+		list_remove_clearList:
 		list_remove_exit:
 	END
 

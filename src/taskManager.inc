@@ -7,10 +7,18 @@
  #ifndef _TASKMANAGER_INC_
  #define _TASKMANAGER_INC_
  .include "list.inc"
- taskManager: CLASS list, 0
+ .include "listItem.inc"
+ .include "task.inc"
+
+ taskManager: CLASS list, list_size
+
+ taskManager_ctor: 
+	BEGIN_TINY
+		THIS list_ctor 
+	END_TINY
 
  taskManager_nextTask: ; A - pointer to task
-
+		movw thisH:thisL, PH:PL
 		FIELD_WLD list_head, AH, AL
  
  taskManager_nextTask_check:
@@ -18,21 +26,30 @@
 		;if task_counter == 0 then run task
 		GETW AH:AL, task_counter
 		tst RH
-		sbic SREG, 7 ; if rh not 0 then skip tst
+		brne taskManager_nextTask_next
 		tst RL
-		sbic SREG, 7 ; if rl == 0 then runTask
-		rjmp taskManager_nextTask_runTask
+		breq taskManager_nextTask_runTask
 
 taskManager_nextTask_next:
 		GETW AH:AL, listItem_next
 		movw AH:AL, RH:RL
 		tst RH
-		sbic SREG, 7 ; if rh not 0 then skip tst
+		brne taskManager_nextTask_check
 		tst RL
-		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_nextTask_check
+		brne taskManager_nextTask_check
 
 		FIELD_WLD list_head, AH, AL; load head again
 		rjmp taskManager_nextTask_check
-		ret
+
+		taskManager_nextTask_runTask:; A - task pointer
+
+		GETW AH:AL, task_stack
+		out SPL, RL
+		out SPH, RH
+		GETW AH:AL, task_cmdPointer
+		movw ZH:ZL, RH:RL
+		movw PH:PL, AH:AL
+
+		ijmp
+
 #endif

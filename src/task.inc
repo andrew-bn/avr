@@ -9,6 +9,7 @@
 
  .include "object.inc"
  .include "listItem.inc"
+
  .CSEG
  ; STATE
  .set task_Running = 0x1
@@ -17,12 +18,12 @@
  .set _task_Int = 0x3
 
  .equ task_Run = _listItem_size
- .equ _task_stack = task_Run + pointerSize
- .equ task_state = _task_stack + pointerSize
+ .equ task_stack = task_Run + pointerSize
+ .equ task_state = task_stack + pointerSize
  .equ task_counter = task_state + 1
- .equ _task_cmdPointer = task_state + 2
- .equ _task_stackMinSpace = _task_cmdPointer + pointerSize
- .equ _task_size = _task_stackMinSpace + 20
+ .equ task_cmdPointer = task_counter + 2
+ .equ task_stackMinSpace = task_cmdPointer + pointerSize
+ .equ _task_size = task_stackMinSpace + 20
 
  task: CLASS listItem, _task_size
  	task_ctor:
@@ -37,7 +38,7 @@
 
 					ldi AL, low(task_start)
 					ldi AH, high(task_start)
-					FIELD_WST _task_cmdPointer, AH, AL
+					FIELD_WST task_cmdPointer, AH, AL
 
 					call __object_size
 					add RL, thisL
@@ -46,13 +47,31 @@
 					sub RL, AL
 					ldi AL, high(1)
 					sbc RH, AL
-					FIELD_WST _task_stack, RH, RL
+					FIELD_WST task_stack, RH, RL
 
 		END_TINY
 
 	task_getState: GETTER task_state
 	task_getCounter: GETTERW task_counter
 	task_setCounter: SETTERW task_counter
-	tast_start:
+
+	task_start:
+
+		push PL
+		push PH
+		movw thisH:thisL, PH:PL
+		FIELD_WLD task_Run, AH, AL
+
+		movw ZH:ZL, AH:AL
+
+	
+		icall
+		pop AH
+		pop AL
+
+		XCALLW QH:QL, list_remove, AH, AL
+
 	ret
+
  #endif
+

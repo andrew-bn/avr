@@ -21,5 +21,9 @@
 		END_TINY
 
 	emptyTask_Run:
+			movw thisH:thisL, PH:PL
+
+
 		ret
+
  #endif

@@ -78,55 +78,15 @@ reti
 	.include "listItem.inc"
 	.include "task.inc"
 	.include "taskManager.inc"
+
  dispatcherTimer:
-		push AL
-		push AH
-		push EH
-		push EL
-		in AL, SREG
-		push AL
+ reti
 
-		XCALL QH:QL, list_getHead
-
-	dispatcherTimer_check:
-		tst RH
-		brne dispatcherTimer_cnt
-		tst RL
-		breq dispatcherTimer_exit
-
-	dispatcherTimer_cnt:
-		movw AH:AL, RH:RL
-		XCALL AH:AL, task_getState
-		ldi EH, task_Wait
-		cp RL, EH
-		brne dispatcherTimer_next
-		XCALL AH:AL, task_getCounter
-		movw EH:EL, RH:RL
-
-		tst EH
-		brne dispatcherTimer_dec
-		tst EL
-		breq dispatcherTimer_next
-
-	dispatcherTimer_dec:
-		
-		sbiw EH:EL, 1
-		XCALLW AH:AL, task_setCounter, EH, EL
-
-	dispatcherTimer_next:
-		XCALL AH:AL, listItem_getNext
-
-		rjmp dispatcherTimer_check
-
-	dispatcherTimer_exit:
-
-		pop AL
-		out SREG, AL
-		pop EL
-		pop EH
-		pop AH
-		pop AL
-	reti
+ kernel_start:
+	SETUP_SYSTIMER
+	sei
+	XCALL QH:QL, taskManager_nextTask
+ ret
 
 _RESET: ; setup stack
 		ldi R16, low(RAMEND)

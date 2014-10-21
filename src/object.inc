@@ -19,6 +19,7 @@
 	.dw @1
 	.dw (@0 * 2)
  .endm
+
  .macro VCALL ; pointer to object; offcet of method pointer
 	push ZH
 	push ZL
@@ -34,9 +35,11 @@
 	pop ZL
 	pop ZH
  .endm
+
  .macro THIS
 	XCALL thisH:thisL, @0
  .endm
+
  .macro XCALL ; pointer to object; method
 	movw PH:PL, @0
 	call @1
