@@ -199,7 +199,7 @@
  .macro SETW;@0 pointer to this;@1 field; @2@3 reg - value
 		movw TH:TL, thisH:thisL; store this
 		movw thisH:thisL, @0; load this
-		FIELD_WST @1, @2, @3; load field value
+		FIELD_WST @1, @2, @3; store field value
 		movw thisH:thisL, TH:TL; restore this
  .endm
  .macro SETTERW

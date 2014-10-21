@@ -18,9 +18,10 @@
  list: CLASS object, list_size
  list_ctor:
 		BEGIN_TINY
-			clr AL
-			FIELD_WST list_head, AL, AL
-			FIELD_WST list_tail, AL, AL
+			NEW listItem
+			movw AH:AL, RH:RL
+			FIELD_WST list_head, AH, AL
+			FIELD_WST list_tail, AH, AL
 			OVERRIDE object_destroy, list_destructor
 		END_TINY
  list_getHead: GETTERW list_head
@@ -58,23 +59,11 @@
 
 				XCALLW AH:AL, listItem_setPrev, BH, BL
 
-				; if this is the first element then set Tail and Head
-				tst BH
-				brne list_add_setNext
-				tst BL
-				brne list_add_setNext
-
-				FIELD_WST list_tail, AH, AL
-				FIELD_WST list_head, AH, AL
-
-				rjmp list_add_exit
-
 	list_add_setNext:
 				; set next for Tail
 				XCALLW BH:BL, listItem_setNext, AH, AL
 				FIELD_WST list_tail, AH, AL
 
-	list_add_exit:
 	END_SMALL
 
  list_remove:
@@ -89,10 +78,23 @@
 							cp AL, CL
 							brne list_remove_next
 
-							rjmp list_remove_remove
+							GETW CH:CL, listItem_prev
+							movw AH:AL, RH:RL
+							GETW CH:CL, listItem_next
+							movw BH:BL, RH:RL
 
+							clr TH
+							IF_NOT_EQU AH, AL,TH, TH, list_remove_checkNext
+								SETW AH:AL, listItem_next, BH, BL
+
+		list_remove_checkNext:
+							clr TH
+							IF_NOT_EQU BH, BL,TH, TH, list_remove_exit
+								SETW BH:BL, listItem_prev, AH, AL
+
+							rjmp list_remove_exit
 		list_remove_next:
-							XCALL CH:CL, listItem_getNext
+							GETW CH:CL, listItem_next
 							; in R we have reference to item
 							movw CH:CL, RH:RL
 							tst CL
@@ -101,30 +103,6 @@
 							brne list_remove_check
 							rjmp list_remove_exit
 
-		list_remove_remove: 
-
-							XCALL CH:CL, listItem_getPrev
-							movw AH:AL, RH:RL
-							XCALL CH:CL, listItem_getNext
-							movw BH:BL, RH:RL
-
-							tst AH
-							brne list_remove_setNext
-							tst AL
-							breq list_remove_checkPrev
-
-		list_remove_setNext:
-							XCALLW AH:AL, listItem_setNext, BH, BL
-
-		list_remove_checkPrev:
-							tst BH
-							brne list_remove_setPrev
-							tst BL
-							breq list_remove_setNext
-		list_remove_setPrev:
-							XCALLW BH:BL, listItem_setPrev, AH, AL
-
-		list_remove_clearList:
 		list_remove_exit:
 	END
 

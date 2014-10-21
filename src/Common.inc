@@ -7,6 +7,7 @@
 
 #ifndef _COMMON_INC_
 #define _COMMON_INC_
+
  .def PH = R15
  .def PL = R14
  .def SH = R9
