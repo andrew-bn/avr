@@ -6,7 +6,9 @@
  */
  .macro TASK_ADD; task type
 	NEW @0
+	XCLI
 	XCALLW QH:QL, list_add, RH, RL
+	XSEI
  .endm
  .macro SETUP_SYSTIMER
 
@@ -80,12 +82,13 @@ reti
 	.include "taskManager.inc"
 
  dispatcherTimer:
+	XCALL QH:QL, taskManager_waitTimeout
  reti
 
  kernel_start:
 	SETUP_SYSTIMER
 	sei
-	XCALL QH:QL, taskManager_nextTask
+	XCALL QH:QL, taskManager_checkAndRun
  ret
 
 _RESET: ; setup stack

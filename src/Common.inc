@@ -145,5 +145,16 @@
 	XPOP Ar+Xr+Zr+Yr
 	ret
  .endm
-
+ .macro XCLI
+	in TL, SREG
+	sbrc TL, 7
+	set
+	cli
+ .endm
+ .macro XSEI
+	in TL, SREG
+	sbrc TL, 6
+	sei
+	clt
+ .endm
 #endif  /* _COMMON_INC_ */

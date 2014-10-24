@@ -12,7 +12,7 @@
  .CSEG
  memory_init:
 	BEGIN_TINY
-
+	XCLI
 		ldi XH, high(SRAM_START)
 		ldi XL, low(SRAM_START)
 
@@ -27,12 +27,12 @@
 		st X+, AL
 		ldi AL, high(RAMEND)
 		st X+, AL
-
+	XSEI
 	END_TINY
 
  memory_allocate:; dw size
  // A - cur, B - next, C - prev, D -prev.prev, E - size
-				
+		XCLI
 				BEGIN
 
 				; load size from stack
@@ -145,8 +145,8 @@ checkBlock:
 				sbci XH, high(-headerSize)
 
 				movw RH:RL, XH:XL
-
-				END
+XSEI
+	END
 
  memory_destroy:
  .def curH = R17
@@ -161,6 +161,7 @@ checkBlock:
  .def tempPrevH = R25
 	
 	BEGIN
+	XCLI
 				; load pointer from stack
 				movw curH:curL, PH:PL
 
@@ -231,7 +232,7 @@ editNext:		movw XH:XL, nextH:nextL
 				st X+, curH
 
  destr_exit:
-
+ XSEI
 END
 
 #endif  /* _MEMORY_INC_ */

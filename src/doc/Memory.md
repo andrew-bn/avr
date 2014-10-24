@@ -44,16 +44,16 @@ ret  - R14, R15
 
 
 ----------
- taskManager_nextTask: ; A - pointer to task
+ taskManager_checkAndRun: ; A - pointer to task
 
 		FIELD_WLD list_head, AH, AL
  
- taskManager_nextTask_check:
+ taskManager_checkAndRun_check:
 		; if state== wait then decrement task_counter
 		GET AH:AL, task_state
 		ldi BL, task_Wait
 		cp RL, BL
-		brne taskManager_nextTask_next
+		brne taskManager_checkAndRun_next
 
 		;if task_counter != 0 then decrement it
 		GETW AH:AL, task_counter
@@ -61,7 +61,7 @@ ret  - R14, R15
 		sbic SREG, 7 ; if rh not 0 then skip tst
 		tst RL
 		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_nextTask_next
+		rjmp taskManager_checkAndRun_next
 
 		crl BH
 		ldi BL, 1
@@ -70,15 +70,15 @@ ret  - R14, R15
 
 		SETW AH:AL, task_counter, RH:RL
 
-taskManager_nextTask_next:
+taskManager_checkAndRun_next:
 		GETW AH:AL, listItem_next
 		movw AH:AL, RH:RL
 		tst RH
 		sbic SREG, 7 ; if rh not 0 then skip tst
 		tst RL
 		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_nextTask_check
+		rjmp taskManager_checkAndRun_check
 
 		FIELD_WLD list_head, AH, AL; load head again
-		rjmp taskManager_nextTask_check
+		rjmp taskManager_checkAndRun_check
 		ret

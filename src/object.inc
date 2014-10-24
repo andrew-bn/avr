@@ -189,7 +189,7 @@
 		FIELD_ST @1, @2; load field value
 		movw thisH:thisL, RH:RL; restore this
  .endm
-
+ 
  .macro SETTER
 		BEGIN_TINY
 				PARAM_LD 0x00, AH
@@ -200,6 +200,12 @@
 		movw TH:TL, thisH:thisL; store this
 		movw thisH:thisL, @0; load this
 		FIELD_WST @1, @2, @3; store field value
+		movw thisH:thisL, TH:TL; restore this
+ .endm
+  .macro SET_;@0 pointer to this;@1 field; @2 reg - value
+		movw TH:TL, thisH:thisL; store this
+		movw thisH:thisL, @0; load this
+		FIELD_ST @1, @2; store field value
 		movw thisH:thisL, TH:TL; restore this
  .endm
  .macro SETTERW

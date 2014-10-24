@@ -22,7 +22,11 @@
 
 	emptyTask_Run:
 			movw thisH:thisL, PH:PL
-
+			asdf: rjmp asdf
+			;save registers
+			BEGIN
+			XCALL QH:QL, taskManager_switch
+			END
 
 		ret
 

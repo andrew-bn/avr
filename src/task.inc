@@ -13,9 +13,7 @@
  .CSEG
  ; STATE
  .set task_Running = 0x1
- .set _tast_Idle = 0x0
  .set task_Wait = 0x2
- .set _task_Int = 0x3
 
  .equ task_Run = _listItem_size
  .equ task_stack = task_Run + pointerSize
@@ -30,10 +28,11 @@
 		BEGIN_TINY
 					THIS listItem_ctor
 
-					clr AL
-					FIELD_WST task_counter, AL,AL
+					ldi AL, 1
+					ldi AH, 0
+					FIELD_WST task_counter, AH, AL
 
-					ldi AL, task_Running
+					ldi AL, task_Wait
 					FIELD_ST task_state, AL
 
 					ldi AL, low(task_start)
@@ -66,11 +65,12 @@
 
 	
 		icall
+
 		pop AH
 		pop AL
 
 		XCALLW QH:QL, list_remove, AH, AL
-
+		XCALL QH:QL, taskManager_checkAndRun
 	ret
 
  #endif

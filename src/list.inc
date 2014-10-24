@@ -84,13 +84,23 @@
 							movw BH:BL, RH:RL
 
 							clr TH
-							IF_NOT_EQU AH, AL,TH, TH, list_remove_checkNext
-								SETW AH:AL, listItem_next, BH, BL
+							cp AH, TH
+							brne list_remove_changePrev
+							cp AL, TH
+							breq list_remove_checkChangeNext
 
-		list_remove_checkNext:
+		list_remove_changePrev:
+							SETW AH:AL, listItem_next, BH, BL
+
+		list_remove_checkChangeNext:
 							clr TH
-							IF_NOT_EQU BH, BL,TH, TH, list_remove_exit
-								SETW BH:BL, listItem_prev, AH, AL
+							cp BH, TH
+							brne list_remove_changeNext
+							cp BL, TH
+							breq list_remove_exit
+
+		list_remove_changeNext:
+							SETW BH:BL, listItem_prev, AH, AL
 
 							rjmp list_remove_exit
 		list_remove_next:
