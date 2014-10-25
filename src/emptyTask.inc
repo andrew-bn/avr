@@ -21,13 +21,13 @@
 		END_TINY
 
 	emptyTask_Run:
+			break
 			movw thisH:thisL, PH:PL
-			asdf: rjmp asdf
+			;asdf: rjmp asdf
 			;save registers
-			BEGIN
-			XCALL QH:QL, taskManager_switch
-			END
-
+			WAITI 50 ; 
+			break
+			asdf: rjmp asdf
 		ret
 
  #endif

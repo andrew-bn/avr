@@ -24,7 +24,8 @@ Q - R12-13 - pointer to task list
 R - R10-11 - wreturn
 S - R8-9 - temp
 T - R6-7 - temp
-U - R4-5
+MStat - R5
+U - R4 
 V - R2-3
 W - R0-1
 

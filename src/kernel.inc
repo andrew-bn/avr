@@ -6,6 +6,7 @@
  */
  .macro TASK_ADD; task type
 	NEW @0
+	
 	XCLI
 	XCALLW QH:QL, list_add, RH, RL
 	XSEI
@@ -72,7 +73,6 @@ reti
 reti
 .ORG INT_VECTORS_SIZE
 
-
 	.include "common.inc"
 	.include "memory.inc"
 	.include "object.inc"
@@ -81,13 +81,15 @@ reti
 	.include "task.inc"
 	.include "taskManager.inc"
 
- dispatcherTimer:
-	XCALL QH:QL, taskManager_waitTimeout
- reti
+ dispatcherTimer: jmp _taskManager_waitTimeout
+
 
  kernel_start:
 	SETUP_SYSTIMER
+	clr MIStat
+	inc MIStat
 	sei
+	
 	XCALL QH:QL, taskManager_checkAndRun
  ret
 
@@ -96,6 +98,9 @@ _RESET: ; setup stack
 		out SPL, R16
 		ldi R16, high(RAMEND)
 		out SPH, R16
+
+		clr MIStat
+		dec MIStat
 
 		call memory_init
 

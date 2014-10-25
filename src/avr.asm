@@ -11,6 +11,8 @@
 jmp avr_start
 .include "emptyTask.inc"
 avr_start:
+
+ TASK_ADD emptyTask
  TASK_ADD emptyTask
  ;TASK_ADD emptyTask
  call kernel_start

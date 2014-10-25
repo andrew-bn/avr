@@ -21,7 +21,7 @@
  .equ task_counter = task_state + 1
  .equ task_cmdPointer = task_counter + 2
  .equ task_stackMinSpace = task_cmdPointer + pointerSize
- .equ _task_size = task_stackMinSpace + 20
+ .equ _task_size = task_stackMinSpace + 40
 
  task: CLASS listItem, _task_size
  	task_ctor:
@@ -69,8 +69,12 @@
 		pop AH
 		pop AL
 
+		XCLI
 		XCALLW QH:QL, list_remove, AH, AL
+		XSEI
+
 		XCALL QH:QL, taskManager_checkAndRun
+
 	ret
 
  #endif

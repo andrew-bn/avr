@@ -18,6 +18,7 @@
  .def RL = R10
  .def QH = R13
  .def QL = R12
+ .def MIStat = R5
 
 
  .equ Ar = 1
@@ -141,20 +142,22 @@
 	XPUSH Ar+Xr+Zr+Yr
 	movw ZH:ZL, PH:PL
  .endm
+
  .macro END_TINY
 	XPOP Ar+Xr+Zr+Yr
 	ret
  .endm
+
  .macro XCLI
-	in TL, SREG
-	sbrc TL, 7
-	set
 	cli
+	dec MIStat
  .endm
+
  .macro XSEI
+	tst MIStat
 	in TL, SREG
-	sbrc TL, 6
+	sbrc TL, 1
 	sei
-	clt
+	inc MIStat
  .endm
 #endif  /* _COMMON_INC_ */

@@ -10,6 +10,15 @@
  .include "listItem.inc"
  .include "task.inc"
 
+ .macro WAITI ;@0- time to sleep
+		BEGIN
+		movw thisH:thisL, QH:QL
+		FIELD_WLD taskManager_currentTask, AH, AL
+		movw thisH:thisL, AH:AL
+		FIELD_WSTI task_counter, @0
+		XCALL QH:QL, taskManager_switch
+		END
+ .endm
  .equ taskManager_currentTask = list_size
  .equ taskManager_size = taskManager_currentTask + pointerSize
 
@@ -21,6 +30,7 @@
 	END_TINY
 
  taskManager_checkAndRun: ; A - pointer to task
+		
 		movw thisH:thisL, PH:PL
 		FIELD_WLD list_head, AH, AL
  
@@ -50,13 +60,8 @@ taskManager_checkAndRun_next:
 		taskManager_checkAndRun_runTask:; A - task pointer
 		
 		ldi BL, task_Running
-		brid tm_cli_end
-		set
-		cli
-		tm_cli_end:
-
 		XCLI
-		SET_ AH:AL, task_state, BL
+		SETB AH:AL, task_state, BL
 		XSEI
 
 		FIELD_WST taskManager_currentTask, AH, AL
@@ -69,7 +74,7 @@ taskManager_checkAndRun_next:
 		movw PH:PL, AH:AL
 
 		ijmp
-
+/////////////
 	taskManager_switch:
 
 		movw thisH:thisL, PH: PL
@@ -81,6 +86,11 @@ taskManager_checkAndRun_next:
 
 		SETW AH:AL, task_stack, BH, BL
 
+		ldi BL, task_Wait
+		XCLI
+		SETB AH:AL, task_state, BL
+		XSEI
+
 		; save command pointer
 		ldi BH, high(task_Manager_switch_exit)
 		ldi BL, low(task_Manager_switch_exit)
@@ -90,7 +100,23 @@ taskManager_checkAndRun_next:
 		task_Manager_switch_exit:
 	ret
 
- taskManager_waitTimeout:
+// int handler
+ _taskManager_waitTimeout:
+		push PH
+		push PL
+		push TH
+		push TL
+		push thisH
+		push thisL
+		push AH
+		push AL
+		push BH
+		push BL
+		push RH
+		push RL
+		in AL, SREG
+		push AL
+
 		movw thisH:thisL, PH: PL
 
 		FIELD_WLD list_head, AH, AL
@@ -125,5 +151,20 @@ taskManager_waitTimeout_next:
 		tst RL
 		brne taskManager_waitTimeout_check
 
-ret
+		pop AL
+		out SREG, AL
+		pop RL
+		pop RH
+		pop BL
+		pop BH
+		pop AL
+		pop AH
+		pop thisL
+		pop thisH
+		pop TL
+		pop TH
+		pop PL
+		pop PH
+
+reti
 #endif
