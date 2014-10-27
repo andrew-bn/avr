@@ -11,13 +11,15 @@
  .include "task.inc"
 
  .macro WAITI ;@0- time to sleep
-		BEGIN
+		XPUSH Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
+		
 		movw thisH:thisL, QH:QL
 		FIELD_WLD taskManager_currentTask, AH, AL
 		movw thisH:thisL, AH:AL
 		FIELD_WSTI task_counter, @0
 		XCALL QH:QL, taskManager_switch
-		END
+		
+		XPOP Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
  .endm
  .equ taskManager_currentTask = list_size
  .equ taskManager_size = taskManager_currentTask + pointerSize

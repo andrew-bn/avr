@@ -12,7 +12,8 @@
  .include "task.inc"
  .CSEG
 	
- .equ _emptyTask_size = _task_size+2
+ .equ _emptyTask_size = _task_size + 2
+
  emptyTask: CLASS task, _emptyTask_size
 	emptyTask_ctor:
 		BEGIN_TINY
@@ -21,13 +22,19 @@
 		END_TINY
 
 	emptyTask_Run:
-			break
-			movw thisH:thisL, PH:PL
-			;asdf: rjmp asdf
-			;save registers
-			WAITI 50 ; 
-			break
-			asdf: rjmp asdf
-		ret
+		movw thisH:thisL, PH:PL
+
+		ldi AL, 0xFF
+		clr AH
+		out DDRA, AL
+
+		emptyTask_Run_:
+			out PORTA, AL
+			WAITI 1000 ; 
+			out PORTA, AH
+			WAITI 1000 ; 
+			
+		rjmp emptyTask_Run_
+	ret
 
  #endif

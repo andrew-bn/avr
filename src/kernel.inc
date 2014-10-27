@@ -11,27 +11,13 @@
 	XCALLW QH:QL, list_add, RH, RL
 	XSEI
  .endm
- .macro SETUP_SYSTIMER
-
-	.equ MainClock = 8000000
-	.equ TimerDivider = MainClock/64/1000
-
-	ldi AL,1<<CTC2|4<<CS20
-	out TCCR2,AL
-	clr AL
-	out TCNT2,AL
-
-	ldi AL,low(TimerDivider)
-	out OCR2,AL		
-
-	ldi AL, 1<<OCF2 
-	out	TIMSK,AL
-
- .endm
 
 .CSEG
+
+
 ; interrupts
-.ORG $000  rjmp _RESET 
+.ORG $000  
+rjmp _RESET 
 .ORG INT0addr
 reti
 .ORG INT1addr
@@ -49,8 +35,8 @@ reti
 reti
 .ORG OVF1addr
 reti
-.ORG OC0addr
-reti	
+.ORG OC0addr rjmp dispatcherTimer
+;reti	
 .ORG OVF0addr
 reti
 .ORG SPIaddr
@@ -85,7 +71,24 @@ reti
 
 
  kernel_start:
-	SETUP_SYSTIMER
+	.equ MainClock = 1000000
+	.equ TimerDivider = MainClock/8/1000
+
+	ldi AL,(1<<CTC0)|(1<<CS01);|(1<<CS00)
+	out TCCR0,AL
+	clr AL
+	out TCNT0,AL
+
+	ldi AL,low(TimerDivider)
+	out OCR0,AL		
+
+	ldi AL, 1<<OCIE0 
+	out	TIMSK,AL
+
+	ldi AL, 1<<OCF0
+	out TIFR, AL
+
+
 	clr MIStat
 	inc MIStat
 	sei
@@ -102,6 +105,7 @@ _RESET: ; setup stack
 		clr MIStat
 		dec MIStat
 
+		;aaa: jmp aaa
 		call memory_init
 
 		NEW taskManager

@@ -13,7 +13,7 @@ jmp avr_start
 avr_start:
 
  TASK_ADD emptyTask
- TASK_ADD emptyTask
+ ;TASK_ADD emptyTask
  ;TASK_ADD emptyTask
  call kernel_start
 
