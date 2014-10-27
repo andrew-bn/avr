@@ -10,6 +10,16 @@
  .include "object.inc"
  .include "listItem.inc"
 
+ .macro START ;@0 - method label
+	 NEW thread
+	 XCALLIWW RH:RL, thread_start, @0, thisH, thisL
+ .endm
+
+ .macro STARTW ;@0 - method label, @1@2 - parameters
+	 NEW thread
+	 XCALLIWW RH:RL, thread_start, @0, @1, @2
+ .endm
+
  .CSEG
  ; STATE
  .set thread_Running = 0x1
@@ -53,7 +63,7 @@
 					FIELD_WST thread_stack, RH, RL
 
 					XCLI
-					XCALLW QH:QL, list_add, RH, RL
+					XCALLW QH:QL, list_add, thisH, thisL
 					XSEI
 		END_TINY
 
@@ -62,8 +72,8 @@
 	thread_setCounter: SETTERW thread_counter
 
 	thread_start:
-		.equ thread_start_methodPointer = 0
-		.equ thread_start_parameter = pointerSize
+		.equ thread_start_methodPointer = pointerSize
+		.equ thread_start_parameter = 0
 		BEGIN_TINY
 			PARAM_WLD thread_start_methodPointer, AH, AL ; //load pointer to 
 			FIELD_WST thread_Run, AH, AL
@@ -81,7 +91,7 @@
 		push PH
 		movw thisH:thisL, PH:PL
 		FIELD_WLD thread_Run, AH, AL
-		FIELD_WLD thread_Run, BH, BL
+		FIELD_WLD thread_startParameter, BH, BL
 		movw PH:PL, BH:BL
 		movw ZH:ZL, AH:AL
 

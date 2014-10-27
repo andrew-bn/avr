@@ -8,26 +8,19 @@
  .include "kernel.inc"
  
 .CSEG
-jmp avr_start
-avr_start:
 
- NEW thread
- XCALLIWW RH:RL, thread_start, thread1, RH, RL
-
- call kernel_start
-
-thread1:
 		ldi AL, 0xFF
 		clr AH
 		out DDRA, AL
 
-		emptythread_Run_:
+		lbl:
 			out PORTA, AL
-			WAITI 1000 ; 
+			WAIT 1000
 			out PORTA, AH
-			WAITI 1000 ; 
+			WAIT 1000
 			
-		rjmp emptythread_Run_
+		rjmp lbl
+
 	ret
 
 

@@ -85,6 +85,13 @@
 	push YL
 	push YH
 
+	; recalculate Y <= StackPointer
+	in YH, SPH
+	in YL, SPL
+	subi YL, low (-7)
+	sbci YH, high(-7)
+
+
 	.if (@0 & Ar) == Ar
 		push AH
 	.endif
@@ -113,11 +120,6 @@
 		push ZH
 	.endif
 
-	; recalculate Y <= StackPointer
-	in YH, SPH
-	in YL, SPL
-	subi YL, low (-(1+6+((@0 & Ar)==Ar)+((@0 & Br)==Br)*2+((@0 & Cr)==Cr)*2+((@0 & Dr)==Dr)*2+((@0 & Er)==Er)*2+((@0 & Xr)==Xr)*2+((@0 & Zr)==Zr)*2)); SREG, YH, YL, R16, CP
-	sbci YH, high(-(1+6+((@0 & Ar)==Ar)+((@0 & Br)==Br)*2+((@0 & Cr)==Cr)*2+((@0 & Dr)==Dr)*2+((@0 & Er)==Er)*2+((@0 & Xr)==Xr)*2+((@0 & Zr)==Zr)*2)); SREG, YH, YL, R16, CP
  .endm
 
  .macro BEGIN

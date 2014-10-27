@@ -10,7 +10,7 @@
  .include "listItem.inc"
  .include "thread.inc"
 
- .macro WAITI ;@0- time to sleep
+ .macro WAIT ;@0- time to sleep
 		XPUSH Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
 		
 		movw thisH:thisL, QH:QL
@@ -21,6 +21,7 @@
 		
 		XPOP Ar+Br+Cr+Dr+Er+Xr+Zr+Yr
  .endm
+
  .equ threadManager_currentthread = list_size
  .equ threadManager_size = threadManager_currentthread + pointerSize
 

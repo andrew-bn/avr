@@ -17,7 +17,7 @@ reti
 reti
 .ORG INT2addr
 reti
-.ORG OC2addr rjmp dispatcherTimer
+.ORG OC2addr reti
 .ORG OVF2addr
 reti
 .ORG ICP1addr
@@ -29,7 +29,6 @@ reti
 .ORG OVF1addr
 reti
 .ORG OC0addr rjmp dispatcherTimer
-;reti	
 .ORG OVF0addr
 reti
 .ORG SPIaddr
@@ -103,4 +102,9 @@ _RESET: ; setup stack
 
 		NEW threadManager
 		movw QH:QL, RH:RL
+
+		START _mainthread
+
+		call kernel_start
+
 _mainthread:
