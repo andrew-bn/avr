@@ -8,20 +8,24 @@
  .include "kernel.inc"
  
 .CSEG
+	START thread2
+ret
 
-		ldi AL, 0xFF
-		clr AH
-		out DDRA, AL
+thread2:
+	ldi AL, 0xFF
+	clr AH
+	out DDRA, AL
 
-		lbl:
-			out PORTA, AL
-			WAIT 1000
-			out PORTA, AH
-			WAIT 1000
-			
-		rjmp lbl
+	lbl:
+	
+	out PORTA, AL
+	WAIT 1000
+	out PORTA, AH
+	WAIT 1000
+		
+	rjmp lbl
 
-	ret
+ret
 
 
 
