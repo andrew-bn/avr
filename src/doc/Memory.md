@@ -20,7 +20,7 @@ stack:
 	Variables
 
 P - R14-15 - pointer (this or type pointers)
-Q - R12-13 - pointer to task list
+Q - R12-13 - pointer to thread list
 R - R10-11 - wreturn
 S - R8-9 - temp
 T - R6-7 - temp
@@ -45,41 +45,41 @@ ret  - R14, R15
 
 
 ----------
- taskManager_checkAndRun: ; A - pointer to task
+ threadManager_checkAndRun: ; A - pointer to thread
 
 		FIELD_WLD list_head, AH, AL
  
- taskManager_checkAndRun_check:
-		; if state== wait then decrement task_counter
-		GET AH:AL, task_state
-		ldi BL, task_Wait
+ threadManager_checkAndRun_check:
+		; if state== wait then decrement thread_counter
+		GET AH:AL, thread_state
+		ldi BL, thread_Wait
 		cp RL, BL
-		brne taskManager_checkAndRun_next
+		brne threadManager_checkAndRun_next
 
-		;if task_counter != 0 then decrement it
-		GETW AH:AL, task_counter
+		;if thread_counter != 0 then decrement it
+		GETW AH:AL, thread_counter
 		tst RH
 		sbic SREG, 7 ; if rh not 0 then skip tst
 		tst RL
 		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_checkAndRun_next
+		rjmp threadManager_checkAndRun_next
 
 		crl BH
 		ldi BL, 1
 		sub RL, BL
 		sbc RH, BH
 
-		SETW AH:AL, task_counter, RH:RL
+		SETW AH:AL, thread_counter, RH:RL
 
-taskManager_checkAndRun_next:
+threadManager_checkAndRun_next:
 		GETW AH:AL, listItem_next
 		movw AH:AL, RH:RL
 		tst RH
 		sbic SREG, 7 ; if rh not 0 then skip tst
 		tst RL
 		sbic SREG, 7 ; if rl not 0
-		rjmp taskManager_checkAndRun_check
+		rjmp threadManager_checkAndRun_check
 
 		FIELD_WLD list_head, AH, AL; load head again
-		rjmp taskManager_checkAndRun_check
+		rjmp threadManager_checkAndRun_check
 		ret

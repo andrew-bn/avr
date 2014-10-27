@@ -9,15 +9,26 @@
  
 .CSEG
 jmp avr_start
-.include "emptyTask.inc"
 avr_start:
 
- TASK_ADD emptyTask
- ;TASK_ADD emptyTask
- ;TASK_ADD emptyTask
+ NEW thread
+ XCALLIWW RH:RL, thread_start, thread1, RH, RL
+
  call kernel_start
 
-tmp2:				rjmp tmp2
+thread1:
+		ldi AL, 0xFF
+		clr AH
+		out DDRA, AL
+
+		emptythread_Run_:
+			out PORTA, AL
+			WAITI 1000 ; 
+			out PORTA, AH
+			WAITI 1000 ; 
+			
+		rjmp emptythread_Run_
+	ret
 
 
 

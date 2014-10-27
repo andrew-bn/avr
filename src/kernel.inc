@@ -4,13 +4,6 @@
  *  Created: 08.10.2014 21:54:56
  *   Author: AB
  */
- .macro TASK_ADD; task type
-	NEW @0
-	
-	XCLI
-	XCALLW QH:QL, list_add, RH, RL
-	XSEI
- .endm
 
 .CSEG
 
@@ -64,10 +57,10 @@ reti
 	.include "object.inc"
 	.include "list.inc"
 	.include "listItem.inc"
-	.include "task.inc"
-	.include "taskManager.inc"
+	.include "thread.inc"
+	.include "threadManager.inc"
 
- dispatcherTimer: jmp _taskManager_waitTimeout
+ dispatcherTimer: jmp _threadManager_waitTimeout
 
 
  kernel_start:
@@ -93,7 +86,7 @@ reti
 	inc MIStat
 	sei
 	
-	XCALL QH:QL, taskManager_checkAndRun
+	XCALL QH:QL, threadManager_checkAndRun
  ret
 
 _RESET: ; setup stack
@@ -108,6 +101,6 @@ _RESET: ; setup stack
 		;aaa: jmp aaa
 		call memory_init
 
-		NEW taskManager
+		NEW threadManager
 		movw QH:QL, RH:RL
-_maintask:
+_mainthread:

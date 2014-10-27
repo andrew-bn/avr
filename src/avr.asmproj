@@ -65,9 +65,6 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="EmptyTask.inc">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="list.inc">
       <SubType>Code</SubType>
     </Compile>
@@ -92,10 +89,10 @@
     <Compile Include="object.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="task.inc">
+    <Compile Include="thread.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="taskManager.inc">
+    <Compile Include="threadManager.inc">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

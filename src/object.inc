@@ -68,7 +68,23 @@
 	pop TL
 	pop TL
  .endm
+  .macro XCALLIWW ; pointer to object; method; Wparam; Wparam
 
+	mov TL, AL
+	ldi AL, high(@2)
+	push AL
+	ldi AL, low(@2)
+	push AL
+	mov AL, TL
+	push @3
+	push @4
+	movw PH:PL, @0
+	call @1
+	pop TL
+	pop TL
+	pop TL
+	pop TL
+ .endm
  .macro NEW ; memory pointer
 
 		mov TL, AL
