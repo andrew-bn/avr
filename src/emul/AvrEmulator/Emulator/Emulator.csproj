@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Avr\Extensions.cs" />
+    <Compile Include="Avr\Port.cs" />
+    <Compile Include="Avr\Register.cs" />
+    <Compile Include="Avr\Status.cs" />
     <Compile Include="Avr\Subi.cs" />
     <Compile Include="Avr\In.cs" />
     <Compile Include="Avr\Push.cs" />

@@ -6,3 +6,11 @@ C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Properties.Res
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.csproj.GenerateResource.Cache
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.exe
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.pdb
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\Emulator.exe.config
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.exe
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.pdb
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.csprojResolveAssemblyReference.cache
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Properties.Resources.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.csproj.GenerateResource.Cache
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\Emulator.exe
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\Emulator.pdb

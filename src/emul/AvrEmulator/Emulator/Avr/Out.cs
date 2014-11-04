@@ -6,16 +6,14 @@
 		{
 		}
 
-		public override void Process(long cmd, Processor proc)
+		public override void Process(ExecutionState state)
 		{
-			var r = GetInt('r', cmd);
-			var a = GetInt('A', cmd);
-			proc.PortSet(a, r);
+			var v = state.Proc.RegisterGet((Register) state.R);
+			state.Proc.PortSet(state.A, v);
 
-			proc.PC++;
+			state.Proc.PC++;
 
-			proc.Tick();
+			state.Proc.Tick();
 		}
-
 	}
 }

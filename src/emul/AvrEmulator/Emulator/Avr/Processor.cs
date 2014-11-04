@@ -7,28 +7,6 @@ using System.Threading.Tasks;
 
 namespace Emulator.Avr
 {
-	public enum Port
-	{
-		SPL = 0x5d-0x20,
-		SPH = 0x5E-0x20
-	}
-
-	public enum Register
-	{
-		R0=0,
-		R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31
-	}
-	public enum Status
-	{
-		C = 0,
-		Z,
-		N,
-		V,
-		S,
-		H,
-		T,
-		I
-	}
 	public class Processor
 	{
 		public UInt16[] Flash;
@@ -75,9 +53,9 @@ namespace Emulator.Avr
 		{
 			return Ram[port + 0x20];
 		}
-		public void PortSet(int port, int register)
+		public void PortSet(int port, byte data)
 		{
-			Ram[port + 0x20] = Ram[register];
+			Ram[port + 0x20] = data;
 		}
 		public void RegisterSet(Register reg, byte data)
 		{
@@ -91,14 +69,8 @@ namespace Emulator.Avr
 		{
 			Ram[address] = data;
 		}
-		public UInt16 Instruction
-		{
-			get { return Flash[PC]; }
-		}
-		public UInt32 LInstruction
-		{
-			get { return (UInt32)(Flash[PC] << 16)|(Flash[PC+1]); }
-		}
+
+
 		public long Ticks;
 		public Processor(UInt16[] flash)
 		{

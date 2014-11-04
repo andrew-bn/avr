@@ -1,9 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 
 namespace Emulator.Avr
 {
+	public class ExecutionState
+	{
+		public long Command { get; set; }
+		public Processor Proc { get; set; }
+		public int A { get; set; }
+		public int D { get; set; }
+		public int R { get; set; }
+		public int K { get; set; }
+
+		public ExecutionState(long command, Processor proc, int a, int d, int r, int k)
+		{
+			Command = command;
+			Proc = proc;
+			A = a;
+			D = d;
+			R = r;
+			K = k;
+		}
+	}
 	public abstract class Instruction
 	{
 		protected Instruction()
@@ -17,7 +37,7 @@ namespace Emulator.Avr
 		public int CommandLength { get; private set; }
 		protected Instruction(string pattern)
 		{
-			Pattern = pattern.Replace(" ", "");
+			Pattern = pattern.ToLower().Replace(" ", "");
 			CommandLength = Pattern.Length/8;
 			CmdMask = 0;
 			for (int i = 0; i < Pattern.Length; i++)
@@ -74,40 +94,44 @@ namespace Emulator.Avr
 				cmd = (cmd << 16) | proc.Flash[proc.PC + i/2];
 			if ((cmd & CmdMask) != CmdCode)
 				return false;
-			Process(cmd, proc);
+			int a = 0, d = 0, r = 0, k = 0;
+			foreach (var p in _patternMap)
+			{
+				if (p.Key == 'a')
+					a = GetInt('a', cmd);
+				else if (p.Key == 'd')
+					d = GetInt('d', cmd);
+				else if (p.Key == 'r')
+					r = GetInt('r', cmd);
+				else if (p.Key == 'k')
+					k = GetInt('k', cmd);
+			}
+			var state = new ExecutionState(cmd, proc, a, d, r, k);
+#if DEBUG
+			Log(state);
+#endif
+			Process(state);
+
 			return true;
 		}
 
-		public virtual void Process(long cmd, Processor proc)
+		private void Log(ExecutionState state)
 		{
-			
+			Debug.Write(string.Format("{1,-10:x}{0,-8}   ",GetType().Name.ToUpper(), state.Proc.PC));
+			foreach (var p in _patternMap)
+			{
+				if (p.Key == 'd')
+					Debug.Write(string.Format("d:{0,-8:x}   ", state.D));
+				else if (p.Key == 'a')
+					Debug.Write(string.Format("a:{0,-8:x}   ", state.A));
+				else if (p.Key == 'r')
+					Debug.Write(string.Format("r:{0,-8:x}   ", state.R));
+				else if (p.Key == 'k')
+					Debug.Write(string.Format("k:{0,-8:x}   ", state.K));
+			}
+			Debug.WriteLine("");
 		}
+		public abstract void Process(ExecutionState state);
 
-		public virtual bool Process(Processor proc)
-		{
-		}
-	}
-
-	public static class Extensions
-	{
-
-		public static ushort Merge(this ushort data, ushort mask1, byte shift1, ushort mask2, byte shift2)
-		{
-			return (ushort)(((data & mask1)>>shift1)|((data & mask2)>>shift2));
-		}
-		public static uint Merge(this ushort data, ushort mask1, byte shift1, ushort mask2, byte shift2, ushort mask3, byte shift3)
-		{
-			return (uint)(((data & mask1) >> shift1) | ((data & mask2) >> shift2) | ((data & mask3) >> shift3));
-		}
-
-		public static byte High(this int data)
-		{
-			return (byte) ((data & 0xFF00) >> 8);
-		}
-		
-		public static byte Low(this int data)
-		{
-			return (byte)(data & 0xFF);
-		}
 	}
 }

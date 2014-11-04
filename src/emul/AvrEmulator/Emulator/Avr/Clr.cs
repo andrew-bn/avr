@@ -2,24 +2,21 @@
 {
 	public class Clr: Instruction
 	{
-		public override bool Process(Processor proc)
+		public Clr() : base("0010 01dd dddd dddd")
 		{
-			var inst = proc.Instruction;
-			if ((inst & 0xFC00) != 0x2400)
-				return false;
-
-			var d = inst.Merge(0x100,5,0xf,0);
-			proc.RegisterSet((Register)d,0);
-			proc.StatusClear(Status.N);
-			proc.StatusClear(Status.V);
-			proc.StatusClear(Status.S);
-			proc.StatusSet(Status.Z);
-			proc.PC++;
-
-			proc.Tick();
-
-			return true;
 		}
 
+		public override void Process(ExecutionState state)
+		{
+			var d = state.D;
+			state.Proc.RegisterSet((Register)d, 0);
+			state.Proc.StatusClear(Status.N);
+			state.Proc.StatusClear(Status.V);
+			state.Proc.StatusClear(Status.S);
+			state.Proc.StatusSet(Status.Z);
+			state.Proc.PC++;
+
+			state.Proc.Tick();
+		}
 	}
 }

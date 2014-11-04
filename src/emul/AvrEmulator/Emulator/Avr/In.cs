@@ -4,24 +4,18 @@ namespace Emulator.Avr
 {
 	public class In: Instruction
 	{
-		public override bool Process(Processor proc)
+		public In():base("1011 0AAd dddd AAAA")
+		{ }
+	
+
+		public override void Process(ExecutionState state)
 		{
-			var inst = proc.Instruction;
-			if ((inst & 0xF800) != 0xB000)
-				return false;
+			var v = state.Proc.PortGet(state.A);
 
-			var d = inst.Merge(0x100,4,0xf0,4);
-			var a = inst.Merge(0x600, 5, 0xf, 0);
+			state.Proc.RegisterSet((Register)state.D, v);
+			state.Proc.PC++;
 
-			var v = proc.PortGet(a);
-
-			proc.RegisterSet((Register)d,v);
-			proc.PC++;
-
-			proc.Tick();
-
-			return true;
+			state.Proc.Tick();
 		}
-
 	}
 }

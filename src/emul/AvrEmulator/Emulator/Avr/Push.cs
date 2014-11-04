@@ -8,16 +8,14 @@ namespace Emulator.Avr
 		{
 		}
 
-		public override void Process(long cmd, Processor proc)
+		public override void Process(ExecutionState state)
 		{
-			var d = GetInt('d', cmd);
-			var v = proc.RegisterGet((Register)d);
-			proc.MemorySet(proc.SP, v);
-			proc.SP--;
-			proc.PC++;
+			var v = state.Proc.RegisterGet((Register)state.D);
+			state.Proc.MemorySet(state.Proc.SP, v);
+			state.Proc.SP--;
+			state.Proc.PC++;
 
-			proc.Tick(2);
+			state.Proc.Tick(2);
 		}
-
 	}
 }

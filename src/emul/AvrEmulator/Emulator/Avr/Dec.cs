@@ -2,36 +2,32 @@
 {
 	public class Dec: Instruction
 	{
-		public override bool Process(Processor proc)
+		public Dec() : base("1001 010d dddd 1010")
 		{
-			var inst = proc.Instruction;
-			if ((inst & 0xFE0F) != 0x940A)
-				return false;
-
-			var d = inst.Merge(0x100,5,0xf0,4);
-			var regVal = proc.RegisterGet((Register)d);
-
-			proc.StatusClear(Status.V);
-			if (regVal == 0x80)
-				proc.StatusSet(Status.V);
-
-			regVal --;
-
-			proc.StatusClear(Status.N);
-			if ((regVal & 0x80)==0x80)
-				proc.StatusSet(Status.N);
-			
-			proc.StatusClear(Status.S);
-			if (proc.StatusGet(Status.V) || proc.StatusGet(Status.N))
-				proc.StatusSet(Status.S);
-			
-			proc.RegisterSet((Register)d,regVal);
-			proc.PC++;
-
-			proc.Tick();
-
-			return true;
 		}
+		
+		public override void Process(ExecutionState state)
+		{
+			var regVal = state.Proc.RegisterGet((Register)state.D);
 
+			state.Proc.StatusClear(Status.V);
+			if (regVal == 0x80)
+				state.Proc.StatusSet(Status.V);
+
+			regVal--;
+
+			state.Proc.StatusClear(Status.N);
+			if ((regVal & 0x80) == 0x80)
+				state.Proc.StatusSet(Status.N);
+
+			state.Proc.StatusClear(Status.S);
+			if (state.Proc.StatusGet(Status.V) || state.Proc.StatusGet(Status.N))
+				state.Proc.StatusSet(Status.S);
+
+			state.Proc.RegisterSet((Register)state.D, regVal);
+			state.Proc.PC++;
+
+			state.Proc.Tick();
+		}
 	}
 }
