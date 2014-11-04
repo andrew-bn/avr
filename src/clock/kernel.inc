@@ -63,10 +63,10 @@ reti
 
 
  kernel_start:
-	.equ MainClock = 1000000
-	.equ TimerDivider = MainClock/8/1000
+	.equ MainClock = 8000000
+	.equ TimerDivider = MainClock/64/1000
 
-	ldi AL,(1<<CTC0)|(1<<CS01);|(1<<CS00)
+	ldi AL,(1<<CTC0)|(1<<CS01)|(1<<CS00)
 	out TCCR0,AL
 	clr AL
 	out TCNT0,AL
@@ -97,7 +97,6 @@ _RESET: ; setup stack
 		clr MIStat
 		dec MIStat
 
-		;aaa: jmp aaa
 		call memory_init
 
 		NEW threadManager
@@ -107,4 +106,5 @@ _RESET: ; setup stack
 
 		call kernel_start
 
+		
 _mainthread:

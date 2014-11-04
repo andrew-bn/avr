@@ -1,0 +1,1 @@
+C:\AB\Work\AVROS\src\emul\AvrEmulator\AvrEmulator\bin\Debug\AvrEmulator.exe.config

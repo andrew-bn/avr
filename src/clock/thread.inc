@@ -104,7 +104,7 @@
 		XCLI
 		XCALLW QH:QL, list_remove, AH, AL
 		XSEI
-
+		DEL AH:AL
 		XCALL QH:QL, threadManager_checkAndRun
 
 	ret

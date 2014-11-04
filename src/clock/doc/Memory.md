@@ -83,3 +83,35 @@ threadManager_checkAndRun_next:
 		FIELD_WLD list_head, AH, AL; load head again
 		rjmp threadManager_checkAndRun_check
 		ret
+
+
+
+
+"ATmega32" instruction use summary:
+adc   :   2 add   :   2 
+brcc  :   1 brcs  :   3 breq  :   7
+brne  :  26
+call  :  29
+cli   :   8
+cp    :  18 cpc   :   3 
+cpi   :   2 dec   :   9
+icall :   4 ijmp  :   1 in    :  74 inc   :   9 jmp   :   2 
+ld    :  18 ldd   :  78 lpm   :   5
+lsr   :   2 mov   :  38 movw  : 162
+pop   : 306 
+push  : 306 ret   :  30 reti  :  20
+sbc   :   2 sbci  :  30
+sbr   :   1 sbrc  :   8
+sei   :   9
+st    :  20 std   :  58
+sub   :   2 subi  :  30tst   :  24
+Instructions used: 41 out of 113 (36.3%)
+
+"ATmega32" memory use summary [bytes]:
+Segment   Begin    End      Code   Data   Used    Size   Use%
+---------------------------------------------------------------
+[.cseg] 0x000000 0x000c02   3012     20   3032   32768   9.3%
+[.dseg] 0x000060 0x000060      0      0      0    2048   0.0%
+[.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
+
+Assembly complete, 0 errors, 12 warnings
