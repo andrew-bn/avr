@@ -11,6 +11,13 @@ using Emulator.Avr;
 
 namespace Emulator
 {
+	/*
+	 
+	 [TypeName]
+	 ParamOffcet ParamName ParamType
+	 [NextTypeName]
+
+	 */
 	public class EmulatorPresenter
 	{
 		private readonly IEmulatorUI _ui;
