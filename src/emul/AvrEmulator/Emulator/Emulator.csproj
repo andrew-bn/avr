@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FastColoredTextBox">
+      <HintPath>..\packages\FCTB.2.16.1.1\lib\FastColoredTextBox.dll</HintPath>
+    </Reference>
+    <Reference Include="ObjectListView">
+      <HintPath>..\packages\ObjectListView.Official.2.8.0\lib\net20\ObjectListView.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,8 +48,17 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsmContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AsmContent.Designer.cs">
+      <DependentUpon>AsmContent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Avr\Extensions.cs" />
     <Compile Include="Avr\Port.cs" />
     <Compile Include="Avr\Register.cs" />
@@ -59,14 +74,47 @@
     <Compile Include="Avr\Processor.cs" />
     <Compile Include="Avr\Out.cs" />
     <Compile Include="Avr\Rjmp.cs" />
+    <Compile Include="EmulatorPresenter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="IEmulatorUI.cs" />
+    <Compile Include="LoadContentArgs.cs" />
+    <Compile Include="MDIParent1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MDIParent1.Designer.cs">
+      <DependentUpon>MDIParent1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ObjectViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectViewer.Designer.cs">
+      <DependentUpon>ObjectViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Memory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Memory.Designer.cs">
+      <DependentUpon>Memory.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AsmContent.resx">
+      <DependentUpon>AsmContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MDIParent1.resx">
+      <DependentUpon>MDIParent1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectViewer.resx">
+      <DependentUpon>ObjectViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -76,6 +124,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Memory.resx">
+      <DependentUpon>Memory.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

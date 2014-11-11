@@ -13,9 +13,10 @@ namespace Emulator.Avr
 		public byte[] Ram;
 		public int PC;
 		private static Instruction[] _instructions;
-
+		public List<int> AffectedAddresses { get; private set; }
 		static Processor()
 		{
+			
 			_instructions = Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => t.BaseType == typeof (Instruction))
 				.Select(c=>Activator.CreateInstance(c))
@@ -29,15 +30,15 @@ namespace Emulator.Avr
 		}
 		public void StatusSet(Status st)
 		{
-			Ram[0x5f] = (byte)(Ram[0x5f]|(byte)(1<<(int)st));
+			MemorySet(0x5f, (byte)(Ram[0x5f] | (byte)(1 << (int)st)));
 		}
 		public void StatusClear(Status st)
 		{
-			Ram[0x5f] = (byte)(Ram[0x5f] ^ (byte)(1 << (int)st));
+			MemorySet(0x5f, (byte)(Ram[0x5f] ^ (byte)(1 << (int)st)));
 		}
 		public void PortSet(Port port, byte data)
 		{
-			Ram[(int)port + 0x20] = data;
+			MemorySet((int)port + 0x20, data);
 		}
 
 		public int SP
@@ -55,11 +56,11 @@ namespace Emulator.Avr
 		}
 		public void PortSet(int port, byte data)
 		{
-			Ram[port + 0x20] = data;
+			MemorySet(port + 0x20, data);
 		}
 		public void RegisterSet(Register reg, byte data)
 		{
-			Ram[(int)reg] = data;
+			MemorySet((int)reg, data);
 		}
 		public byte RegisterGet(Register register)
 		{
@@ -68,12 +69,15 @@ namespace Emulator.Avr
 		public void MemorySet(int address, byte data)
 		{
 			Ram[address] = data;
+			if (!AffectedAddresses.Contains(address))
+				AffectedAddresses.Add(address);
 		}
 
 
 		public long Ticks;
 		public Processor(UInt16[] flash)
 		{
+			AffectedAddresses = new List<int>();
 			PC = 0;
 			Flash = flash;
 			Ram = new byte[2 * 1024+0x60];
@@ -85,6 +89,7 @@ namespace Emulator.Avr
 		}
 		public void Step()
 		{
+			AffectedAddresses.Clear();
 			for (int i = 0;i<_instructions.Length;i++)
 			{
 				if (_instructions[i].Run(this)) 

@@ -2,7 +2,7 @@
 {
 	public class Clr: Instruction
 	{
-		public Clr() : base("0010 01dd dddd dddd")
+		public Clr() : base("0010 01rd dddd rrrr")
 		{
 		}
 
