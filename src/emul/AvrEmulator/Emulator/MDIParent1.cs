@@ -17,7 +17,7 @@ namespace Emulator
 		private int childFormNumber = 0;
 		private Memory _memoryTool;
 		private AsmContent _asmContent;
-		private ObjectViewer _objectViewer;
+		private List<ObjectViewer> _objectViewers = new List<ObjectViewer>();
 		public MDIParent1()
 		{
 			InitializeComponent();
@@ -46,11 +46,8 @@ namespace Emulator
 			_memoryTool = new Memory();
 			_memoryTool.Show(dp_Main);
 			_asmContent = new AsmContent();
-			_objectViewer = new ObjectViewer();
-			//_asmContent.MdiParent = this;
-			//_asmContent.Text = fileName;
 			_asmContent.Show(dp_Main);
-			_objectViewer.Show(dp_Main);
+		
 			_emulatorPresenter.Load(fileName);
 		}
 
@@ -124,8 +121,17 @@ namespace Emulator
 		public void RefreshAddress(Dictionary<int, byte> addressValueMap)
 		{
 			_memoryTool.RefreshAddress(addressValueMap);
-			_objectViewer.RefreshAddress(addressValueMap);
+			foreach(var v in _objectViewers)
+				v.RefreshAddress(addressValueMap);
 		}
+
+		public void LoadView(string viewName, params ObjectItemAddress[] objectItems)
+		{
+			var viewer = new ObjectViewer(viewName, objectItems);
+			_objectViewers.Add(viewer);
+			viewer.Show(dp_Main);
+		}
+
 		public void JumpToLine(int line)
 		{
 			_asmContent.JumpToLine(line);

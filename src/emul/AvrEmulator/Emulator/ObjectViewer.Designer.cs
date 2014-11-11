@@ -31,9 +31,10 @@
 			this.components = new System.ComponentModel.Container();
 			this.olv_Objects = new BrightIdeasSoftware.TreeListView();
 			this.olvName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvAddress = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvValue = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvDec = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvBin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvHex = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			((System.ComponentModel.ISupportInitialize)(this.olv_Objects)).BeginInit();
 			this.SuspendLayout();
@@ -41,15 +42,17 @@
 			// olv_Objects
 			// 
 			this.olv_Objects.AllColumns.Add(this.olvName);
+			this.olv_Objects.AllColumns.Add(this.olvAddress);
 			this.olv_Objects.AllColumns.Add(this.olvValue);
 			this.olv_Objects.AllColumns.Add(this.olvDec);
-			this.olv_Objects.AllColumns.Add(this.olvBin);
+			this.olv_Objects.AllColumns.Add(this.olvHex);
 			this.olv_Objects.AllColumns.Add(this.olvType);
 			this.olv_Objects.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvName,
+            this.olvAddress,
             this.olvValue,
             this.olvDec,
-            this.olvBin,
+            this.olvHex,
             this.olvType});
 			this.olv_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olv_Objects.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -66,8 +69,17 @@
 			// olvName
 			// 
 			this.olvName.AspectName = "Name";
+			this.olvName.DisplayIndex = 1;
 			this.olvName.Text = "Name";
 			this.olvName.Width = 171;
+			// 
+			// olvAddress
+			// 
+			this.olvAddress.AspectName = "Address";
+			this.olvAddress.AspectToStringFormat = "[{0:x4}]";
+			this.olvAddress.DisplayIndex = 0;
+			this.olvAddress.Text = "";
+			this.olvAddress.Width = 65;
 			// 
 			// olvValue
 			// 
@@ -81,11 +93,11 @@
 			this.olvDec.Text = "Decimal";
 			this.olvDec.Width = 85;
 			// 
-			// olvBin
+			// olvHex
 			// 
-			this.olvBin.AspectName = "Bin";
-			this.olvBin.Text = "Binary";
-			this.olvBin.Width = 93;
+			this.olvHex.AspectName = "Hex";
+			this.olvHex.Text = "Hex";
+			this.olvHex.Width = 93;
 			// 
 			// olvType
 			// 
@@ -94,7 +106,7 @@
 			// 
 			// ObjectViewer
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(756, 410);
 			this.Controls.Add(this.olv_Objects);
@@ -112,8 +124,9 @@
 		private BrightIdeasSoftware.OLVColumn olvName;
 		private BrightIdeasSoftware.OLVColumn olvValue;
 		private BrightIdeasSoftware.OLVColumn olvDec;
-		private BrightIdeasSoftware.OLVColumn olvBin;
+		private BrightIdeasSoftware.OLVColumn olvHex;
 		private BrightIdeasSoftware.OLVColumn olvType;
+		private BrightIdeasSoftware.OLVColumn olvAddress;
 
 	}
 }

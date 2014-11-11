@@ -24,3 +24,13 @@ C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\bin\Debug\FastColoredTextBox.xml
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\bin\Debug\ObjectListView.dll
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\bin\Debug\ObjectListView.xml
 C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.ObjectViewer.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\FastColoredTextBox.dll
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\ObjectListView.dll
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\FastColoredTextBox.xml
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\bin\Debug\ObjectListView.xml
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.AsmContent.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Form1.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.MDIParent1.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.ObjectViewer.resources
+C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Memory.resources

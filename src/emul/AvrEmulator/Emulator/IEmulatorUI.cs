@@ -13,5 +13,7 @@ namespace Emulator
 		void JumpToLine(int line);
 
 		void RefreshAddress(Dictionary<int, byte> addressValueMap);
+
+		void LoadView(string viewName, params ObjectItemAddress[] objectItem);
 	}
 }
