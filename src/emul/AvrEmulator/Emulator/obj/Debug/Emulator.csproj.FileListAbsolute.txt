@@ -34,3 +34,5 @@ C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Form1.resources
 C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.MDIParent1.resources
 C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.ObjectViewer.resources
 C:\Storage\AVR\src\emul\AvrEmulator\Emulator\obj\Debug\Emulator.Memory.resources
+C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\bin\Debug\ObjectViewers.mv
+C:\AB\Work\AVROS\src\emul\AvrEmulator\Emulator\bin\Debug\Types.ti

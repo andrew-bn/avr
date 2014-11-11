@@ -14,6 +14,8 @@ namespace Emulator
 
 		void RefreshAddress(Dictionary<int, byte> addressValueMap);
 
-		void LoadView(string viewName, params ObjectItemAddress[] objectItem);
+		void CreateViewer(string viewer, ObjectItem[] objectItem);
+
+		void AddViewerType(TypeItem type);
 	}
 }

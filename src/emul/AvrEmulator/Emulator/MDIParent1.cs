@@ -125,13 +125,18 @@ namespace Emulator
 				v.RefreshAddress(addressValueMap);
 		}
 
-		public void LoadView(string viewName, params ObjectItemAddress[] objectItems)
+		public void CreateViewer(string viewerName, ObjectItem[] objectItem)
 		{
-			var viewer = new ObjectViewer(viewName, objectItems);
+			var viewer = new ObjectViewer(viewerName, objectItem);
 			_objectViewers.Add(viewer);
 			viewer.Show(dp_Main);
 		}
 
+		public void AddViewerType(TypeItem type)
+		{
+			ObjectViewer.AddType(type);
+		}
+		
 		public void JumpToLine(int line)
 		{
 			_asmContent.JumpToLine(line);

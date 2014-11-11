@@ -17,15 +17,19 @@ namespace Emulator
 	public partial class ObjectViewer : DockContent
 	{
 		private MemoryObject[] _items;
-		private static Dictionary<string, TypeItem> _objects;
-		public ObjectViewer(string name, ObjectItemAddress[] objects)
+		private static Dictionary<string, TypeItem> _objects = new Dictionary<string, TypeItem>();
+
+		public static void AddType(TypeItem type)
+		{
+			_objects.Add(type.TypeName, type);
+		}
+		public ObjectViewer(string name, ObjectItem[] objects)
 		{
 			InitializeComponent();
 			this.Text = name;
 			olv_Objects.CanExpandGetter += CanExpandGetter;
 			olv_Objects.ChildrenGetter += ChildrenGetter;
-			_objects = objects.ToDictionary(o => o.Type.TypeName, o => o.Type);
-			_items = objects.Select(o => ParseObject(o.Address,o.Name,o.Type)).ToArray();
+			_items = objects.Select(o => ParseObject(o.Address,o.Name,_objects[o.Type])).ToArray();
 			olv_Objects.Roots = _items;
 			
 		}
@@ -71,15 +75,15 @@ namespace Emulator
 			return ((MemoryObject)model).Inner;
 		}
 	}
-	public class ObjectItemAddress
+	public class ObjectItem
 	{
-		public ObjectItemAddress(int address, string name, TypeItem type)
+		public ObjectItem(int address, string name, string type)
 		{
 			Type = type;
 			Address = address;
 			Name = name;
 		}
-		public TypeItem Type { get; set; }
+		public string Type { get; set; }
 		public string Name { get; set; }
 		public int Address { get; set; }
 	}
@@ -131,6 +135,7 @@ namespace Emulator
 	}
 	public class IntObject : MemoryObject
 	{
+		private int _value = 0;
 		public IntObject(TreeListView tlv, string name, int address)
 			: base(tlv)
 		{
@@ -149,14 +154,19 @@ namespace Emulator
 
 		protected override void Refresh(Dictionary<int, byte> addressValueMap)
 		{
-			if (addressValueMap.ContainsKey(Address))
-			{
-				var val = addressValueMap[Address] | (addressValueMap[Address] << 8);
-				Value = "0x" + val.ToString("x4");
-				Hex = Value;
-				Dec = val.ToString("G");
-				Tlv.RefreshObject(this);
-			}
+			byte temp1 = 0;
+			int temp = _value;
+			if (addressValueMap.TryGetValue(Address, out temp1))
+				temp = (temp & 0xff00) | temp1;
+			if (addressValueMap.TryGetValue(Address + 1, out temp1))
+				temp = (temp & 0xff) | (temp1 << 8);
+			if (temp == _value) return;
+			_value = temp;
+			
+			Value = "0x" + _value.ToString("x4");
+			Hex = Value;
+			Dec = _value.ToString("G");
+			Tlv.RefreshObject(this);
 		}
 	}
 	public class MemoryObject
@@ -183,7 +193,7 @@ namespace Emulator
 			if (Inner != null)
 			{
 				foreach (var o in Inner)
-					o.Refresh(addressValueMap);
+					o.Update(addressValueMap);
 			}
 		}
 

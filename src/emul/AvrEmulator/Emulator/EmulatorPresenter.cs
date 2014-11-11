@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,10 +31,95 @@ namespace Emulator
 		public EmulatorPresenter(IEmulatorUI ui)
 		{
 			_ui = ui;
+			LoadTypeItems();
+			LoadObjectViewers();
+		}
+
+		private void LoadTypeItems()
+		{
+			var files = Directory.GetFiles(Environment.CurrentDirectory, "*.ti");
+			var sb = new StringBuilder();
+			foreach (var f in files)
+			{
+				sb.AppendLine(File.ReadAllText(f));
+			}
+
+			var objectViewerMv = sb.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			TypeItem type = null;
+			List<PropertyItem> props = null;
+			foreach (var line in objectViewerMv)
+			{
+				var trimmed = line.Trim();
+				if (trimmed.StartsWith("["))
+				{
+					if (type!=null)
+					{
+						type.Properties = props.ToArray();
+						_ui.AddViewerType(type);
+					}
+					type = new TypeItem()
+					{
+						TypeName = line.Substring(1, line.Length - 2)
+					};
+					props = new List<PropertyItem>();
+				}
+				else
+				{
+					var descr = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+					props.Add(new PropertyItem()
+						{
+							Offcet = int.Parse(descr[0]),
+							Name = string.Join(" ", descr.Skip(2)),
+							Type = descr[1]
+						}) ;
+				}
+			}
+			if (type != null)
+			{
+				type.Properties = props.ToArray();
+				_ui.AddViewerType(type);
+			}
+		}
+
+		private void LoadObjectViewers()
+		{
+			var files = Directory.GetFiles(Environment.CurrentDirectory, "*.mv");
+			var sb = new StringBuilder();
+			foreach (var f in files)
+			{
+				sb.AppendLine(File.ReadAllText(f));
+			}
+
+			var objectViewerMv = sb.ToString().Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+			var viewer = string.Empty;
+			List<ObjectItem> objects = null;
+			foreach (var line in objectViewerMv)
+			{
+				var trimmed = line.Trim();
+				if (trimmed.StartsWith("["))
+				{
+					if (!string.IsNullOrEmpty(viewer))
+					{
+						_ui.CreateViewer(viewer, objects.ToArray());
+					}
+					viewer = line.Substring(1, line.Length - 2);
+					objects = new List<ObjectItem>();
+				}
+				else
+				{
+					var descr = trimmed.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
+					objects.Add(new ObjectItem(int.Parse(descr[0]), string.Join(" ", descr.Skip(2)), descr[1]));
+				}
+			}
+			if (!string.IsNullOrEmpty(viewer))
+			{
+				_ui.CreateViewer(viewer, objects.ToArray());
+			}
 		}
 
 		internal void Load(string fileName)
 		{
+
 			var dir = Path.GetDirectoryName(fileName);
 			var file = Path.GetFileNameWithoutExtension(fileName);
 			_asmFile = File.ReadAllText(dir + "\\" + file + ".lss").Replace("\r\n", "\n");
@@ -51,7 +137,6 @@ namespace Emulator
 
 			_processor = new Processor(ReadFlash(File.ReadAllLines(dir + "\\" + file + ".hex")));
 			_ui.LoadAsmContent(new LoadContentArgs(_processor, _asmFile, _labelsMap, _definitionsMap, _equMap));
-			LoadRegistersView();
 
 			_ui.JumpToLine(MapAddressToLine(0));
 		}
@@ -122,59 +207,6 @@ namespace Emulator
 
 			_ui.RefreshAddress(_processor.AffectedAddresses.ToDictionary(a => a, a => _processor.Ram[a]));
 		}
-		private void LoadRegistersView()
-		{
-			_ui.LoadView("Registers",
-				new ObjectItemAddress(26, "Memory pointers", new TypeItem()
-				{
-					TypeName = "MemoryPointers",
-					Properties = new[]
-					{
-						new PropertyItem(){Name = "X", Offcet = 0, Type = "Int"}, 
-						new PropertyItem(){Name = "Y", Offcet = 2, Type = "Int"}, 
-						new PropertyItem(){Name = "Z", Offcet = 4, Type = "Int"}, 
-					}
-				}),
-				new ObjectItemAddress(0, "Registers", new TypeItem()
-				{
 
-					TypeName = "Registers",
-					Properties = new[]
-				{
-					new PropertyItem() {Name = "R0", Offcet = 0, Type = "Byte"},
-					new PropertyItem() {Name = "R1", Offcet = 1, Type = "Byte"},
-					new PropertyItem() {Name = "R2", Offcet = 2, Type = "Byte"},
-					new PropertyItem() {Name = "R3", Offcet = 3, Type = "Byte"},
-					new PropertyItem() {Name = "R4", Offcet = 4, Type = "Byte"},
-					new PropertyItem() {Name = "R5", Offcet = 5, Type = "Byte"},
-					new PropertyItem() {Name = "R6", Offcet = 6, Type = "Byte"},
-					new PropertyItem() {Name = "R7", Offcet = 7, Type = "Byte"},
-					new PropertyItem() {Name = "R8", Offcet = 8, Type = "Byte"},
-					new PropertyItem() {Name = "R9", Offcet = 9, Type = "Byte"},
-					new PropertyItem() {Name = "R10", Offcet = 10, Type = "Byte"},
-					new PropertyItem() {Name = "R11", Offcet = 11, Type = "Byte"},
-					new PropertyItem() {Name = "R12", Offcet = 12, Type = "Byte"},
-					new PropertyItem() {Name = "R13", Offcet = 13, Type = "Byte"},
-					new PropertyItem() {Name = "R14", Offcet = 14, Type = "Byte"},
-					new PropertyItem() {Name = "R15", Offcet = 15, Type = "Byte"},
-					new PropertyItem() {Name = "R16", Offcet = 16, Type = "Byte"},
-					new PropertyItem() {Name = "R17", Offcet = 17, Type = "Byte"},
-					new PropertyItem() {Name = "R18", Offcet = 18, Type = "Byte"},
-					new PropertyItem() {Name = "R19", Offcet = 19, Type = "Byte"},
-					new PropertyItem() {Name = "R20", Offcet = 20, Type = "Byte"},
-					new PropertyItem() {Name = "R21", Offcet = 21, Type = "Byte"},
-					new PropertyItem() {Name = "R22", Offcet = 22, Type = "Byte"},
-					new PropertyItem() {Name = "R23", Offcet = 23, Type = "Byte"},
-					new PropertyItem() {Name = "R24", Offcet = 24, Type = "Byte"},
-					new PropertyItem() {Name = "R25", Offcet = 25, Type = "Byte"},
-					new PropertyItem() {Name = "R26", Offcet = 26, Type = "Byte"},
-					new PropertyItem() {Name = "R27", Offcet = 27, Type = "Byte"},
-					new PropertyItem() {Name = "R28", Offcet = 28, Type = "Byte"},
-					new PropertyItem() {Name = "R29", Offcet = 29, Type = "Byte"},
-					new PropertyItem() {Name = "R30", Offcet = 30, Type = "Byte"},
-					new PropertyItem() {Name = "R31", Offcet = 31, Type = "Byte"},
-				}
-				}));
-		}
 	}
 }
