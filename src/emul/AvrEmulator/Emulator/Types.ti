@@ -1,8 +1,4 @@
-﻿[MemoryRegisters]
-	int	X
-	int	Y
-	int	Z
-[Registers]
+﻿[Registers]
 	byte	R0
 	byte	R1
 	byte	R2
@@ -32,6 +28,17 @@
 	int		X (R27, R26)
 	int		Y (R29, R28)
 	int		Z (R31, R30)
+[Stack]
+	int		SP
+[StatusRegister]
+	bit0	C (Carry)
+	bit1	Z (Zero)
+	bit2	N (Negative)
+	bit3	V (Two’s Complement Overflow)
+	bit4	S (Sign=N+V)
+	bit5	H (Half Carry)
+	bit6	T (Bit Copy Storage)
+	bit7	I (Global Interrapt)
 [CustomRegisters]
 	byte	R0
 	byte	R1

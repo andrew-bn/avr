@@ -13,6 +13,7 @@ namespace Emulator.Avr
 		public byte[] Ram;
 		public int PC;
 		private static Instruction[] _instructions;
+		public int Frequency { get; private set; }
 		public List<int> AffectedAddresses { get; private set; }
 		static Processor()
 		{
@@ -24,6 +25,12 @@ namespace Emulator.Avr
 				.ToArray();
 
 		}
+
+		public void Status(Status st, bool value)
+		{
+			if (value) StatusSet(st);
+			else StatusClear(st);
+		}
 		public bool StatusGet(Status st)
 		{
 			return (Ram[0x5f] & (1 << (int) st)) != 0;
@@ -34,7 +41,7 @@ namespace Emulator.Avr
 		}
 		public void StatusClear(Status st)
 		{
-			MemorySet(0x5f, (byte)(Ram[0x5f] ^ (byte)(1 << (int)st)));
+			MemorySet(0x5f, (byte)(Ram[0x5f] & (0xff ^ (1 << (int)st))));
 		}
 		public void PortSet(Port port, byte data)
 		{
@@ -75,10 +82,11 @@ namespace Emulator.Avr
 
 
 		public long Ticks;
-		public Processor(UInt16[] flash)
+		public Processor(int frequency, UInt16[] flash)
 		{
 			AffectedAddresses = new List<int>();
 			PC = 0;
+			Frequency = frequency;
 			Flash = flash;
 			Ram = new byte[2 * 1024+0x60];
 		}

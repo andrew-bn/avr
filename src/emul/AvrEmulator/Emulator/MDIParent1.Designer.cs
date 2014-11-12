@@ -94,12 +94,19 @@
 			this.printPreviewToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
-			this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.lbl_Status = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.lbl_Ticks = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.lbl_Elapsed = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.lbl_Frequency = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.dp_Main = new WeifenLuo.WinFormsUI.Docking.DockPanel();
 			this.ofd_OpenHex = new System.Windows.Forms.OpenFileDialog();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
 			this.menuStrip.SuspendLayout();
 			this.toolStrip.SuspendLayout();
 			this.statusStrip.SuspendLayout();
@@ -457,10 +464,11 @@
             this.printPreviewToolStripButton,
             this.toolStripSeparator2,
             this.helpToolStripButton,
-            this.toolStripButton1});
+            this.toolStripButton1,
+            this.toolStripButton2});
 			this.toolStrip.Location = new System.Drawing.Point(0, 28);
 			this.toolStrip.Name = "toolStrip";
-			this.toolStrip.Size = new System.Drawing.Size(843, 25);
+			this.toolStrip.Size = new System.Drawing.Size(843, 27);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "ToolStrip";
 			// 
@@ -470,7 +478,7 @@
 			this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
 			this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.newToolStripButton.Name = "newToolStripButton";
-			this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.newToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.newToolStripButton.Text = "New";
 			this.newToolStripButton.Click += new System.EventHandler(this.ShowNewForm);
 			// 
@@ -480,7 +488,7 @@
 			this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
 			this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.openToolStripButton.Name = "openToolStripButton";
-			this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.openToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.openToolStripButton.Text = "Open";
 			this.openToolStripButton.Click += new System.EventHandler(this.OpenFile);
 			// 
@@ -490,13 +498,13 @@
 			this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
 			this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.saveToolStripButton.Name = "saveToolStripButton";
-			this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.saveToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.saveToolStripButton.Text = "Save";
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
 			// 
 			// printToolStripButton
 			// 
@@ -504,7 +512,7 @@
 			this.printToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("printToolStripButton.Image")));
 			this.printToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.printToolStripButton.Name = "printToolStripButton";
-			this.printToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.printToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.printToolStripButton.Text = "Print";
 			// 
 			// printPreviewToolStripButton
@@ -513,13 +521,13 @@
 			this.printPreviewToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripButton.Image")));
 			this.printPreviewToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.printPreviewToolStripButton.Name = "printPreviewToolStripButton";
-			this.printPreviewToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.printPreviewToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.printPreviewToolStripButton.Text = "Print Preview";
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
 			// 
 			// helpToolStripButton
 			// 
@@ -527,25 +535,77 @@
 			this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
 			this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.helpToolStripButton.Name = "helpToolStripButton";
-			this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.helpToolStripButton.Size = new System.Drawing.Size(23, 24);
 			this.helpToolStripButton.Text = "Help";
+			// 
+			// toolStripButton1
+			// 
+			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton1.Name = "toolStripButton1";
+			this.toolStripButton1.Size = new System.Drawing.Size(59, 24);
+			this.toolStripButton1.Text = "Step";
+			this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
 			// 
 			// statusStrip
 			// 
+			this.statusStrip.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel});
-			this.statusStrip.Location = new System.Drawing.Point(0, 533);
+            this.lbl_Status,
+            this.toolStripStatusLabel1,
+            this.lbl_Ticks,
+            this.toolStripStatusLabel2,
+            this.lbl_Elapsed,
+            this.toolStripStatusLabel3,
+            this.lbl_Frequency});
+			this.statusStrip.Location = new System.Drawing.Point(0, 530);
 			this.statusStrip.Name = "statusStrip";
 			this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-			this.statusStrip.Size = new System.Drawing.Size(843, 25);
+			this.statusStrip.Size = new System.Drawing.Size(843, 28);
 			this.statusStrip.TabIndex = 2;
 			this.statusStrip.Text = "StatusStrip";
 			// 
-			// toolStripStatusLabel
+			// lbl_Status
 			// 
-			this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-			this.toolStripStatusLabel.Size = new System.Drawing.Size(49, 20);
-			this.toolStripStatusLabel.Text = "Status";
+			this.lbl_Status.Name = "lbl_Status";
+			this.lbl_Status.Size = new System.Drawing.Size(76, 23);
+			this.lbl_Status.Text = "Status";
+			// 
+			// toolStripStatusLabel1
+			// 
+			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(76, 23);
+			this.toolStripStatusLabel1.Text = "Ticks:";
+			// 
+			// lbl_Ticks
+			// 
+			this.lbl_Ticks.Name = "lbl_Ticks";
+			this.lbl_Ticks.Size = new System.Drawing.Size(21, 23);
+			this.lbl_Ticks.Text = "0";
+			// 
+			// toolStripStatusLabel2
+			// 
+			this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+			this.toolStripStatusLabel2.Size = new System.Drawing.Size(98, 23);
+			this.toolStripStatusLabel2.Text = "Elapsed:";
+			// 
+			// lbl_Elapsed
+			// 
+			this.lbl_Elapsed.Name = "lbl_Elapsed";
+			this.lbl_Elapsed.Size = new System.Drawing.Size(65, 23);
+			this.lbl_Elapsed.Text = "0.0.0";
+			// 
+			// toolStripStatusLabel3
+			// 
+			this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+			this.toolStripStatusLabel3.Size = new System.Drawing.Size(120, 23);
+			this.toolStripStatusLabel3.Text = "Frequency:";
+			// 
+			// lbl_Frequency
+			// 
+			this.lbl_Frequency.Name = "lbl_Frequency";
+			this.lbl_Frequency.Size = new System.Drawing.Size(21, 23);
+			this.lbl_Frequency.Text = "0";
 			// 
 			// dp_Main
 			// 
@@ -553,9 +613,9 @@
 			this.dp_Main.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dp_Main.DockBackColor = System.Drawing.SystemColors.Control;
 			this.dp_Main.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
-			this.dp_Main.Location = new System.Drawing.Point(0, 53);
+			this.dp_Main.Location = new System.Drawing.Point(0, 55);
 			this.dp_Main.Name = "dp_Main";
-			this.dp_Main.Size = new System.Drawing.Size(843, 480);
+			this.dp_Main.Size = new System.Drawing.Size(843, 475);
 			dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
 			dockPanelGradient1.StartColor = System.Drawing.SystemColors.ControlLight;
 			autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -608,15 +668,14 @@
 			this.ofd_OpenHex.FileName = "openFileDialog1";
 			this.ofd_OpenHex.Filter = "*.hex|";
 			// 
-			// toolStripButton1
+			// toolStripButton2
 			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton1.Text = "toolStripButton1";
-			this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton2.Name = "toolStripButton2";
+			this.toolStripButton2.Size = new System.Drawing.Size(54, 24);
+			this.toolStripButton2.Text = "Run";
+			this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
 			// 
 			// MDIParent1
 			// 
@@ -657,7 +716,7 @@
 		private System.Windows.Forms.ToolStripMenuItem printSetupToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
-		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+		private System.Windows.Forms.ToolStripStatusLabel lbl_Status;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem tileHorizontalToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem fileMenu;
@@ -700,6 +759,13 @@
 		private WeifenLuo.WinFormsUI.Docking.DockPanel dp_Main;
 		private System.Windows.Forms.OpenFileDialog ofd_OpenHex;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripStatusLabel lbl_Ticks;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+		private System.Windows.Forms.ToolStripStatusLabel lbl_Elapsed;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+		private System.Windows.Forms.ToolStripStatusLabel lbl_Frequency;
+		private System.Windows.Forms.ToolStripButton toolStripButton2;
 	}
 }
 

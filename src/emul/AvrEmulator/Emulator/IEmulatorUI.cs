@@ -17,5 +17,13 @@ namespace Emulator
 		void CreateViewer(string viewer, ObjectItem[] objectItem);
 
 		void AddViewerType(TypeItem type);
+
+		void RefreshProcessorStatus(long ticks, int frequency);
+
+		void SetBreakpoint(int line);
+
+		void HighlightStackPointer(int address);
+
+		void RemoveBreakpoint(int line);
 	}
 }

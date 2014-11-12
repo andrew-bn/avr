@@ -24,6 +24,9 @@ namespace Emulator
 		readonly TextStyle _macroParameterStyle = new TextStyle(Brushes.CadetBlue, null, FontStyle.Regular);
 		readonly TextStyle _labelStyle = new TextStyle(Brushes.Black, null, FontStyle.Underline);
 		private LoadContentArgs _content;
+
+		public event Action<int> LineDoubleClick;
+
 		public AsmContent()
 		{
 			InitializeComponent();
@@ -58,11 +61,44 @@ namespace Emulator
 			e.ChangedRange.SetStyle(_labelStyle, "("+string.Join(@"[\s|:|,])|(",_content.LabelsMap.Keys)+")", RegexOptions.IgnoreCase);
 		}
 
+		private int? debuggingLine = 0;
 		internal void JumpToLine(int line)
 		{
 			rtb_Source.Navigate(line);
-			
+			debuggingLine = line;
 			rtb_Source.CurrentLineColor = Color.Plum;
+		}
+
+		private void rtb_Source_PaintLine(object sender, PaintLineEventArgs e)
+		{
+			if (_breakpoints.Contains(e.LineIndex))
+				e.Graphics.DrawRectangle(new Pen(Color.Red, 4), 5, e.LineRect.Y, 45, e.LineRect.Height);
+			if (debuggingLine.HasValue && e.LineIndex == debuggingLine.Value)
+				e.Graphics.DrawRectangle(new Pen(Color.Red, 4), e.LineRect);
+		}
+
+		private void rtb_Source_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			var lineIdx = rtb_Source.Selection.Start.iLine;
+			if (LineDoubleClick != null)
+				LineDoubleClick(lineIdx);
+		}
+		List<int> _breakpoints = new List<int>();
+		internal void SetBreakpointMarker(int line)
+		{
+			if (!_breakpoints.Contains(line))
+			{
+				_breakpoints.Add(line);
+				rtb_Source.Refresh();
+			}
+		}
+		internal void RemoveBreakpointMarker(int line)
+		{
+			if (_breakpoints.Contains(line))
+			{
+				_breakpoints.Remove(line);
+				rtb_Source.Refresh();
+			}
 		}
 	}
 }

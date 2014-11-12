@@ -9,11 +9,14 @@ namespace Emulator
 	public partial class Memory : DockContent
 	{
 		readonly TextStyle _changedStyle = new TextStyle(Brushes.Red, null, FontStyle.Regular);
+		readonly TextStyle _highlightStyle = new TextStyle(Brushes.SteelBlue, null, FontStyle.Regular);
 		private readonly int _changedStyleIndex;
-		public Memory()
+		public Memory(string text)
 		{
 			InitializeComponent();
+			Text = text;
 			_changedStyleIndex = rtb_Memory.AddStyle(_changedStyle);
+			rtb_Memory.AddStyle(_highlightStyle);
 		}
 
 		public void Load(Processor proc)
@@ -54,6 +57,19 @@ namespace Emulator
 				rtb_Memory.TextSource[address/16][(address - address/16*16)*3] = new Char(newVal[0]) {style = mask};
 				rtb_Memory.TextSource[address/16][(address - address/16*16)*3 + 1] = new Char(newVal[1]) {style = mask};
 			}
+			rtb_Memory.Invalidate();
+		}
+
+		internal void Highlight(int address)
+		{
+			var mask = rtb_Memory.GetStyleIndexMask(new[] { _highlightStyle });
+			rtb_Memory.ClearStyle(mask);
+	
+			rtb_Memory.TextSource[address / 16][(address - address / 16 * 16) * 3] =
+				new Char(rtb_Memory.TextSource[address / 16][(address - address / 16 * 16) * 3].c) { style = mask };
+				rtb_Memory.TextSource[address / 16][(address - address / 16 * 16) * 3 + 1] =
+					new Char(rtb_Memory.TextSource[address / 16][(address - address / 16 * 16) * 3 + 1].c) { style = mask };
+			
 			rtb_Memory.Invalidate();
 		}
 	}

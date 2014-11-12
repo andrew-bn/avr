@@ -28,6 +28,8 @@ namespace Emulator
 		private Dictionary<string, int> _equMap;
 		private Dictionary<string, Register> _definitionsMap;
 		private Dictionary<int, int> _addressToSourceMap;
+		private Dictionary<int, int> _sourceToAddressMap;
+		private List<int> _breakpoints = new List<int>();
 		public EmulatorPresenter(IEmulatorUI ui)
 		{
 			_ui = ui;
@@ -123,6 +125,7 @@ namespace Emulator
 			var file = Path.GetFileNameWithoutExtension(fileName);
 			_asmFile = File.ReadAllText(dir + "\\" + file + ".lss").Replace("\r\n", "\n");
 			_addressToSourceMap = LoadAddressToSourceMap(File.ReadAllLines(dir + "\\" + file + ".lss"));
+			_sourceToAddressMap = _addressToSourceMap.ToDictionary(i => i.Value, i => i.Key);
 			var _map = File.ReadAllLines(dir + "\\" + file + ".map");
 			_labelsMap = _map.Where(l => l.StartsWith("CSEG"))
 							.Select(l => l.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
@@ -134,7 +137,7 @@ namespace Emulator
 							.Select(l => l.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 							.ToDictionary(l => l[1], l => int.Parse(l[2], NumberStyles.HexNumber)); ;
 
-			_processor = new Processor(ReadFlash(File.ReadAllLines(dir + "\\" + file + ".hex")));
+			_processor = new Processor(8000000,ReadFlash(File.ReadAllLines(dir + "\\" + file + ".hex")));
 			_ui.LoadAsmContent(new LoadContentArgs(_processor, _asmFile, _labelsMap, _definitionsMap, _equMap));
 
 			_ui.JumpToLine(MapAddressToLine(0));
@@ -201,11 +204,48 @@ namespace Emulator
 
 		internal void Step()
 		{
+			var prevSp = _processor.SP;
 			_processor.Step();
+			if (_processor.SP != prevSp)
+				_ui.HighlightStackPointer(_processor.SP);
 			_ui.JumpToLine(MapAddressToLine(_processor.PC));
-
+			_ui.RefreshProcessorStatus(_processor.Ticks, _processor.Frequency);
 			_ui.RefreshAddress(_processor.AffectedAddresses.ToDictionary(a => a, a => _processor.Ram[a]));
 		}
 
+
+		internal void SetBreakpointOnLine(int line)
+		{
+			if (_sourceToAddressMap.ContainsKey(line))
+			{
+				if (!_breakpoints.Contains(_sourceToAddressMap[line]))
+				{
+					_breakpoints.Add(_sourceToAddressMap[line]);
+					_ui.SetBreakpoint(line);
+				}
+				else
+				{
+					_breakpoints.Remove(_sourceToAddressMap[line]);
+					_ui.RemoveBreakpoint(line);
+				}
+			}
+		}
+
+		internal void Run()
+		{
+			while (true)
+			{
+				_processor.Step();
+				if (_breakpoints.Contains(_processor.PC))
+				{
+					_ui.HighlightStackPointer(_processor.SP);
+					_ui.JumpToLine(MapAddressToLine(_processor.PC));
+					_ui.RefreshProcessorStatus(_processor.Ticks, _processor.Frequency);
+					_ui.RefreshAddress(_processor.AffectedAddresses.ToDictionary(a => a, a => _processor.Ram[a]));
+
+					break;
+				}
+			}
+		}
 	}
 }

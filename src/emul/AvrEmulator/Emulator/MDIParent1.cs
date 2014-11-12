@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Emulator
 {
@@ -15,13 +16,25 @@ namespace Emulator
 	{
 		private EmulatorPresenter _emulatorPresenter;
 		private int childFormNumber = 0;
-		private Memory _memoryTool;
+		private Memory[] _memoryTools;
 		private AsmContent _asmContent;
 		private List<ObjectViewer> _objectViewers = new List<ObjectViewer>();
 		public MDIParent1()
 		{
 			InitializeComponent();
 			_emulatorPresenter = new EmulatorPresenter(this);
+		
+
+			_asmContent = new AsmContent();
+			_asmContent.Show(dp_Main);
+
+			_memoryTools = new Memory[2];
+			_memoryTools[0] = new Memory("Memory1");
+			_memoryTools[0].Show(dp_Main, DockState.DockBottom);
+			_memoryTools[1] = new Memory("Memory2");
+			_memoryTools[1].Show(dp_Main,DockState.DockBottom);
+
+			_asmContent.LineDoubleClick += _asmContent_LineDoubleClick;
 		}
 
 		private void ShowNewForm(object sender, EventArgs e)
@@ -43,12 +56,13 @@ namespace Emulator
 
 		private void OpenFile(string fileName)
 		{
-			_memoryTool = new Memory();
-			_memoryTool.Show(dp_Main);
-			_asmContent = new AsmContent();
-			_asmContent.Show(dp_Main);
-		
+			
 			_emulatorPresenter.Load(fileName);
+		}
+
+		void _asmContent_LineDoubleClick(int line)
+		{
+			_emulatorPresenter.SetBreakpointOnLine(line);
 		}
 
 		private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -118,25 +132,51 @@ namespace Emulator
 			}
 		}
 
+		public void HighlightStackPointer(int address)
+		{
+			foreach(var mt in _memoryTools)
+				mt.Highlight(address);
+		}
 		public void RefreshAddress(Dictionary<int, byte> addressValueMap)
 		{
-			_memoryTool.RefreshAddress(addressValueMap);
-			foreach(var v in _objectViewers)
-				v.RefreshAddress(addressValueMap);
+			foreach (var mt in _memoryTools)
+			{
+				mt.RefreshAddress(addressValueMap);
+				foreach (var v in _objectViewers)
+					v.RefreshAddress(addressValueMap);
+			}
 		}
 
 		public void CreateViewer(string viewerName, ObjectItem[] objectItem)
 		{
 			var viewer = new ObjectViewer(viewerName, objectItem);
 			_objectViewers.Add(viewer);
-			viewer.Show(dp_Main);
+			viewer.Show(dp_Main, DockState.DockLeft);
 		}
 
 		public void AddViewerType(TypeItem type)
 		{
 			ObjectViewer.AddType(type);
 		}
-		
+		// Hz = op per second
+		// fr = 1000msec
+		// n = ?msec
+		public void RefreshProcessorStatus(long ticks, int frequency)
+		{
+			
+			lbl_Ticks.Text = ticks.ToString("G");
+			lbl_Frequency.Text = string.Format("{0}MHz",frequency/1000000);
+			lbl_Elapsed.Text = TimeSpan.FromTicks((long)(TimeSpan.TicksPerMillisecond * (ticks * 1000d / frequency))).ToString(@"hh\:mm\:ss\.ffffff") + "μs";
+		}
+
+		public void RemoveBreakpoint(int line)
+		{
+			_asmContent.RemoveBreakpointMarker(line);
+		}
+		public void SetBreakpoint(int line)
+		{
+			_asmContent.SetBreakpointMarker(line);
+		}
 		public void JumpToLine(int line)
 		{
 			_asmContent.JumpToLine(line);
@@ -144,12 +184,18 @@ namespace Emulator
 		public void LoadAsmContent(LoadContentArgs args)
 		{
 			_asmContent.Load(args);
-			_memoryTool.Load(args.Processor);
+			foreach(var mt in _memoryTools)
+				mt.Load(args.Processor);
 		}
 
 		private void toolStripButton1_Click(object sender, EventArgs e)
 		{
 			_emulatorPresenter.Step();
+		}
+
+		private void toolStripButton2_Click(object sender, EventArgs e)
+		{
+			_emulatorPresenter.Run();
 		}
 	}
 }

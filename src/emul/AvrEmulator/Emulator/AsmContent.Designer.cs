@@ -66,6 +66,8 @@
 			this.rtb_Source.TabIndex = 0;
 			this.rtb_Source.Zoom = 100;
 			this.rtb_Source.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.rtb_Source_TextChanged);
+			this.rtb_Source.PaintLine += new System.EventHandler<FastColoredTextBoxNS.PaintLineEventArgs>(this.rtb_Source_PaintLine);
+			this.rtb_Source.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.rtb_Source_MouseDoubleClick);
 			// 
 			// AsmContent
 			// 

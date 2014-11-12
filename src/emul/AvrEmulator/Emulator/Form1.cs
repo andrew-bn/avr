@@ -31,7 +31,7 @@ namespace Emulator
 		public Form1()
 		{
 			InitializeComponent();
-			proc = new Processor(ReadHex(@"C:\AB\Work\AVROS\src\clock\Debug\avr.hex"));
+			proc = new Processor(8000000,ReadHex(@"C:\AB\Work\AVROS\src\clock\Debug\avr.hex"));
 			//proc.Step();
 			//proc.Run();
 

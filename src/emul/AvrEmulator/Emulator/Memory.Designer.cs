@@ -49,7 +49,7 @@ namespace Emulator
         '\"',
         '\'',
         '\''};
-			this.rtb_Memory.AutoScrollMinSize = new System.Drawing.Size(386, 124);
+			this.rtb_Memory.AutoScrollMinSize = new System.Drawing.Size(101, 31);
 			this.rtb_Memory.BackBrush = null;
 			this.rtb_Memory.CharHeight = 31;
 			this.rtb_Memory.CharWidth = 15;
@@ -70,7 +70,6 @@ namespace Emulator
 			this.rtb_Memory.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("rtb_Memory.ServiceColors")));
 			this.rtb_Memory.Size = new System.Drawing.Size(789, 551);
 			this.rtb_Memory.TabIndex = 0;
-			this.rtb_Memory.Text = "fastColoredTextBox1\r\nfdgsdf\r\ns\r\ndfgsfd";
 			this.rtb_Memory.Zoom = 100;
 			// 
 			// Memory

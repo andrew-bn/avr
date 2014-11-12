@@ -8,23 +8,24 @@
 		
 		public override void Process(ExecutionState state)
 		{
-			var regVal = state.Proc.RegisterGet((Register)state.D);
+			var v = state.Proc.RegisterGet((Register)state.D);
 
-			state.Proc.StatusClear(Status.V);
-			if (regVal == 0x80)
-				state.Proc.StatusSet(Status.V);
+			if (v == 0x80) state.Proc.StatusSet(Status.V);
+			else state.Proc.StatusClear(Status.V);
 
-			regVal--;
+			v--;
 
-			state.Proc.StatusClear(Status.N);
-			if ((regVal & 0x80) == 0x80)
-				state.Proc.StatusSet(Status.N);
+			if (v == 0) state.Proc.StatusSet(Status.Z);
+			else state.Proc.StatusClear(Status.Z);
 
-			state.Proc.StatusClear(Status.S);
+			if ((v & 0x80) == 0x80) state.Proc.StatusSet(Status.N);
+			else state.Proc.StatusClear(Status.N);
+
 			if (state.Proc.StatusGet(Status.V) || state.Proc.StatusGet(Status.N))
 				state.Proc.StatusSet(Status.S);
+			else state.Proc.StatusClear(Status.S);
 
-			state.Proc.RegisterSet((Register)state.D, regVal);
+			state.Proc.RegisterSet((Register)state.D, v);
 			state.Proc.PC++;
 
 			state.Proc.Tick();

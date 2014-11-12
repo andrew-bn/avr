@@ -53,6 +53,10 @@ namespace Emulator
 					prop= new ByteObject(olv_Objects,i.Name,address+mo.Size);
 				else if (i.Type.ToLower()=="int")
 					prop = new IntObject(olv_Objects, i.Name, address + mo.Size);
+				else if (i.Type.ToLower().StartsWith("bit") && i.Type.Length == 4 && char.IsDigit(i.Type[3]))
+				{
+					prop = new BitObject(olv_Objects, i.Name, address+mo.Size,int.Parse(i.Type[3].ToString()));
+				}
 				else prop = ParseObject(address + mo.Size, i.Name, _objects[i.Type]);
 
 				mo.Inner.Add(prop);
@@ -127,6 +131,29 @@ namespace Emulator
 			if (addressValueMap.ContainsKey(Address))
 			{
 				Value = "0x"+addressValueMap[Address].ToString("x2");
+				Tlv.RefreshObject(this);
+			}
+		}
+	}
+	public class BitObject : MemoryObject
+	{
+		private readonly int _bit;
+
+		public BitObject(TreeListView tlv, string name, int address, int bit)
+			: base(tlv)
+		{
+			_bit = bit;
+			Name = name;
+			Address = address;
+			Value = "0";
+			Type = "Bit";
+			Size = 0;
+		}
+		protected override void Refresh(Dictionary<int, byte> addressValueMap)
+		{
+			if (addressValueMap.ContainsKey(Address))
+			{
+				Value = (addressValueMap[Address] & (1<<_bit)) > 0?"1":"0";
 				Tlv.RefreshObject(this);
 			}
 		}
