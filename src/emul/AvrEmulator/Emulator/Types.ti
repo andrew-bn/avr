@@ -1,54 +1,54 @@
 ﻿[MemoryRegisters]
-	0	int	X
-	2	int	Y
-	4	int	Z
+	int	X
+	int	Y
+	int	Z
 [Registers]
-	0	byte	R0
-	1	byte	R1
-	2	byte	R2
-	3	byte	R3
-	4	byte	R4
-	5	byte	R5
-	6	byte	R6
-	7	byte	R7
-	8	byte	R8
-	9	byte	R9
-	10	byte	R10
-	11	byte	R11
-	12	byte	R12
-	13	byte	R13
-	14	byte	R14
-	15	byte	R15
-	16	byte	R16
-	17	byte	R17
-	18	byte	R18
-	19	byte	R19
-	20	byte	R20
-	21	byte	R21
-	22	byte	R22
-	23	byte	R23
-	24	byte	R24
-	25	byte	R25
-	26	int		X (R27, R26)
-	28	int		Y (R29, R28)
-	30	int		Z (R31, R30)
+	byte	R0
+	byte	R1
+	byte	R2
+	byte	R3
+	byte	R4
+	byte	R5
+	byte	R6
+	byte	R7
+	byte	R8
+	byte	R9
+	byte	R10
+	byte	R11
+	byte	R12
+	byte	R13
+	byte	R14
+	byte	R15
+	byte	R16
+	byte	R17
+	byte	R18
+	byte	R19
+	byte	R20
+	byte	R21
+	byte	R22
+	byte	R23
+	byte	R24
+	byte	R25
+	int		X (R27, R26)
+	int		Y (R29, R28)
+	int		Z (R31, R30)
 [CustomRegisters]
-	0	byte	R0
-	1	byte	R1
-	2	byte	R2
-	3	byte	R3
-	4	byte	R4
-	5	byte	MIStat(R5)
-	6	int		TH:TL
-	8	int		T2H:T2L(S)
-	10	int		RH:RL
-	12	int		QH:QL
-	14	int		PH:PL
-	16	int		AH:AL
-	18	int		BH:BL
-	20	int		CH:CL
-	22	int		DH:DL
-	24	int		EH:EL
-	26	int		XH:XL
-	28	int		YH:YL
-	30	int		ZH:ZL
+	byte	R0
+	byte	R1
+	byte	R2
+	byte	R3
+	byte	R4
+	byte	MIStat(R5)
+	int		TH:TL
+	int		T2H:T2L(S)
+	int		RH:RL
+	int		QH:QL
+	int		PH:PL
+	int		AH:AL
+	int		BH:BL
+	int		CH:CL
+	int		DH:DL
+	int		EH:EL
+	int		XH:XL
+	int		YH:YL
+	int		ZH:ZL

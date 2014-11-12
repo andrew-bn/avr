@@ -42,6 +42,7 @@ namespace Emulator
 				Address = address,
 				Name = name,
 				Type = o.TypeName,
+				Size = 0
 			};
 			mo.Inner = new List<MemoryObject>();
 
@@ -49,12 +50,13 @@ namespace Emulator
 			{
 				MemoryObject prop;
 				if (i.Type.ToLower()=="byte")
-					prop= new ByteObject(olv_Objects,i.Name,address+i.Offcet);
+					prop= new ByteObject(olv_Objects,i.Name,address+mo.Size);
 				else if (i.Type.ToLower()=="int")
-					prop = new IntObject(olv_Objects, i.Name, address + i.Offcet);
-				else prop = ParseObject(address + i.Offcet, i.Name, _objects[i.Type]);
+					prop = new IntObject(olv_Objects, i.Name, address + mo.Size);
+				else prop = ParseObject(address + mo.Size, i.Name, _objects[i.Type]);
 
 				mo.Inner.Add(prop);
+				mo.Size += prop.Size;
 			}
 
 			return mo;
@@ -95,7 +97,6 @@ namespace Emulator
 
 	public class PropertyItem
 	{
-		public int Offcet { get; set; }
 		public string Name { get; set; }
 		public string Type { get; set; }
 	}
@@ -118,17 +119,14 @@ namespace Emulator
 			Name = name;
 			Address = address;
 			Value = "0x00";
-			Dec = "0";
-			Hex = Value;
 			Type = "Byte";
+			Size = 1;
 		}
 		protected override void Refresh(Dictionary<int, byte> addressValueMap)
 		{
 			if (addressValueMap.ContainsKey(Address))
 			{
 				Value = "0x"+addressValueMap[Address].ToString("x2");
-				Hex = Value;
-				Dec = addressValueMap[Address].ToString("G");
 				Tlv.RefreshObject(this);
 			}
 		}
@@ -142,9 +140,8 @@ namespace Emulator
 			Name = name;
 			Address = address;
 			Value = "0x0000";
-			Dec = "0";
-			Hex = Value;
 			Type = "Int";
+			Size = 2;
 			Inner = new List<MemoryObject>()
 			{
 				new ByteObject(tlv,"High",address+1),
@@ -164,8 +161,6 @@ namespace Emulator
 			_value = temp;
 			
 			Value = "0x" + _value.ToString("x4");
-			Hex = Value;
-			Dec = _value.ToString("G");
 			Tlv.RefreshObject(this);
 		}
 	}
@@ -180,9 +175,8 @@ namespace Emulator
 
 		public string Value { get; set; }
 		public string Name { get; set; }
-		public string Dec { get; set; }
 		public string Type { get; set; }
-		public string Hex { get; set; }
+		public int Size { get; set; }
 		public List<MemoryObject> Inner { get; set; }
 
 		public int Address { get; set; }

@@ -68,9 +68,8 @@ namespace Emulator
 					var descr = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 					props.Add(new PropertyItem()
 						{
-							Offcet = int.Parse(descr[0]),
-							Name = string.Join(" ", descr.Skip(2)),
-							Type = descr[1]
+							Name = string.Join(" ", descr.Skip(1)),
+							Type = descr[0]
 						}) ;
 				}
 			}
