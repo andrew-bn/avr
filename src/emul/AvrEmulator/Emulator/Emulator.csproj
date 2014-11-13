@@ -59,8 +59,16 @@
     <Compile Include="AsmContent.Designer.cs">
       <DependentUpon>AsmContent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Avr\And.cs" />
+    <Compile Include="Avr\Mov.cs" />
+    <Compile Include="Avr\Ret.cs" />
+    <Compile Include="Avr\Pop.cs" />
+    <Compile Include="Avr\Sei.cs" />
+    <Compile Include="Avr\Cli.cs" />
+    <Compile Include="Avr\Inc.cs" />
     <Compile Include="Avr\Extensions.cs" />
     <Compile Include="Avr\Movw.cs" />
+    <Compile Include="Avr\Sbrc.cs" />
     <Compile Include="Avr\St.cs" />
     <Compile Include="Avr\Port.cs" />
     <Compile Include="Avr\Register.cs" />
@@ -73,7 +81,7 @@
     <Compile Include="Avr\Dec.cs" />
     <Compile Include="Avr\Instruction.cs" />
     <Compile Include="Avr\Ldi.cs" />
-    <Compile Include="Avr\Clr.cs" />
+    <Compile Include="Avr\Eor.cs" />
     <Compile Include="Avr\Processor.cs" />
     <Compile Include="Avr\Out.cs" />
     <Compile Include="Avr\Rjmp.cs" />

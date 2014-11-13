@@ -9,7 +9,10 @@
 
 		public override void Process(ExecutionState state)
 		{
-			state.Proc.PC = state.Proc.PC + state.K + 1;
+			int increment = state.K + 1;
+			if ((state.K & 0x800) == 0x800)
+				increment = -((~state.K)&0xFFF);
+			state.Proc.PC = state.Proc.PC + increment;
 
 			state.Proc.Tick(2);
 		}

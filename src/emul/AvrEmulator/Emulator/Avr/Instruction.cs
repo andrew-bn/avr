@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -7,21 +8,29 @@ namespace Emulator.Avr
 {
 	public class ExecutionState
 	{
+		public Instruction Instruction { get; set; }
 		public ulong Command { get; set; }
 		public Processor Proc { get; set; }
 		public int A { get; set; }
 		public int D { get; set; }
 		public int R { get; set; }
 		public int K { get; set; }
-
-		public ExecutionState(ulong command, Processor proc, int a, int d, int r, int k)
+		public int B { get; set; }
+		public ExecutionState(Instruction instruction, ulong command, Processor proc, int a, int d, int r, int k, int b)
 		{
+			Instruction = instruction;
 			Command = command;
 			Proc = proc;
 			A = a;
 			D = d;
 			R = r;
 			K = k;
+			B = b;
+		}
+
+		public void Execute()
+		{
+			Instruction.Process(this);
 		}
 	}
 	public abstract class Instruction
@@ -86,14 +95,14 @@ namespace Emulator.Avr
 			return res;
 		}
 
-		public bool Run(Processor proc)
+		public ExecutionState GetExecutionState(Processor proc, int address)
 		{
-			ulong cmd = proc.Flash[proc.PC];
+			ulong cmd = proc.Flash[address].Cell;
 			for (int i = 2; i < CommandLength; i += 2)
-				cmd = (cmd << 16) | proc.Flash[proc.PC + i/2];
+				cmd = (cmd << 16) | proc.Flash[address + i / 2].Cell;
 			if ((cmd & CmdMask) != CmdCode)
-				return false;
-			int a = 0, d = 0, r = 0, k = 0;
+				return null;
+			int a = 0, d = 0, r = 0, k = 0, b = 0;
 			foreach (var p in _patternMap)
 			{
 				if (p.Key == 'a')
@@ -104,32 +113,13 @@ namespace Emulator.Avr
 					r = GetInt('r', cmd);
 				else if (p.Key == 'k')
 					k = GetInt('k', cmd);
+				else if (p.Key == 'b')
+					b = GetInt('b', cmd);
 			}
-			var state = new ExecutionState(cmd, proc, a, d, r, k);
-#if DEBUG
-			Log(state);
-#endif
-			Process(state);
+			return new ExecutionState(this, cmd, proc, a, d, r, k,b);
 
-			return true;
 		}
 
-		private void Log(ExecutionState state)
-		{
-			Debug.Write(string.Format("{1,-10:x}{0,-8}   ",GetType().Name.ToUpper(), state.Proc.PC));
-			foreach (var p in _patternMap)
-			{
-				if (p.Key == 'd')
-					Debug.Write(string.Format("d:{0,-8:x}   ", state.D));
-				else if (p.Key == 'a')
-					Debug.Write(string.Format("a:{0,-8:x}   ", state.A));
-				else if (p.Key == 'r')
-					Debug.Write(string.Format("r:{0,-8:x}   ", state.R));
-				else if (p.Key == 'k')
-					Debug.Write(string.Format("k:{0,-8:x}   ", state.K));
-			}
-			Debug.WriteLine("");
-		}
 		public abstract void Process(ExecutionState state);
 
 	}

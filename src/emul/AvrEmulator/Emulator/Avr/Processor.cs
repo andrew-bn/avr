@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 
 namespace Emulator.Avr
 {
+	public struct FlashItem
+	{
+		public UInt16 Cell;
+		public ExecutionState State;
+	}
 	public class Processor
 	{
-		public UInt16[] Flash;
+		public FlashItem[] Flash;
 		public byte[] Ram;
 		public int PC;
 		private static Instruction[] _instructions;
@@ -98,7 +103,10 @@ namespace Emulator.Avr
 			if (!AffectedAddresses.Contains(address))
 				AffectedAddresses.Add(address);
 		}
-
+		public byte MemoryGet(int address)
+		{
+			return Ram[address];
+		}
 
 		public long Ticks;
 		public Processor(int frequency, UInt16[] flash)
@@ -106,7 +114,7 @@ namespace Emulator.Avr
 			AffectedAddresses = new List<int>();
 			PC = 0;
 			Frequency = frequency;
-			Flash = flash;
+			Flash = flash.Select(i=>new FlashItem {Cell = i}).ToArray();
 			Ram = new byte[2 * 1024+0x60];
 		}
 		public void Run()
@@ -114,14 +122,29 @@ namespace Emulator.Avr
 			while (true)
 				Step();
 		}
+
+		public ExecutionState GetCurrentInstruction()
+		{
+			return GetInstruction(PC);
+		}
+
+		public ExecutionState GetInstruction(int address)
+		{
+			if (Flash[address].State != null)
+			{
+				return Flash[address].State;
+			}
+			foreach (var i in _instructions)
+			{
+				var state = i.GetExecutionState(this,address);
+				if (state != null) return state;
+			}
+			throw new Exception("Command not found");
+		}
 		public void Step()
 		{
 			AffectedAddresses.Clear();
-			for (int i = 0;i<_instructions.Length;i++)
-			{
-				if (_instructions[i].Run(this)) 
-					break;
-			}
+			GetCurrentInstruction().Execute();
 		}
 		
 		public void Tick(int cycles = 1)

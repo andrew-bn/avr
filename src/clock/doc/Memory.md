@@ -88,22 +88,24 @@ threadManager_checkAndRun_next:
 
 
 "ATmega32" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   2 add   :   2 adiw  :   0 and   :   0 
-andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   1 brcs  :   3 break :   0 breq  :   7 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :  26 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 CALL  :  29 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   8 cln   :   0 CLR   :  17 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  18 cpc   :   3 
-cpi   :   2 cpse  :   0 DEC   :   9 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   4 ijmp  :   1 IN    :  74 inc   :   9 jmp   :   2 
-ld    :  18 ldd   :  78 LDI   :  62 lds   :   0 lpm   :   5 lsl   :   0 
-lsr   :   2 mov   :  38 MOVW  : 162 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 OUT   :  37 pop   : 306 
-PUSH  : 306 rcall :   0 ret   :  30 reti  :  20 RJMP  :  11 rol   :   0 
-ror   :   0 sbc   :   2 SBCI  :  30 sbi   :   0 sbic  :   0 sbis  :   0 
-sbiw  :   0 sbr   :   1 sbrc  :   8 sbrs  :   0 sec   :   0 seh   :   0 
-sei   :   9 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :  20 std   :  58 sts   :   0 
-sub   :   2 SUBI  :  30 swap  :   0 tst   :  24 wdr   :   0 
+adc   :   2 
+add   :   2
+brcc  :   1 
+brcs  :   3
+breq  :   7
+brne  :  26
+cp    :  18 
+cpc   :   3 
+cpi   :   2 
+icall :   4 
+ijmp  :   1 
+jmp   :   2 
+ld    :  18 
+ldd   :  78 
+lpm   :   5
+lsr   :   2 
+reti  :  20 
+sbc   :   2 
+sbr   :   1 
+std   :  58
+sub   :   2 
