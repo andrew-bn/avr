@@ -53,6 +53,25 @@ namespace Emulator.Avr
 			get { return PortGet(Port.SPL) | (PortGet(Port.SPH) << 8); }
 			set { PortSet(Port.SPL, (byte)(value & 0xFF)); PortSet(Port.SPH, (byte)((value & 0xFF00)>>8)); }
 		}
+
+		public int X
+		{
+			get { return RegisterGet(Register.R26) | (RegisterGet(Register.R27) << 8); }
+			set { RegisterSet(Register.R26, (byte)(value & 0xFF)); RegisterSet(Register.R27, (byte)((value & 0xFF00) >> 8)); }
+
+		}
+
+		public int Y
+		{
+			get { return RegisterGet(Register.R28) | (RegisterGet(Register.R29) << 8); }
+			set { RegisterSet(Register.R28, (byte)(value & 0xFF)); RegisterSet(Register.R29, (byte)((value & 0xFF00) >> 8)); }
+		}
+
+		public int Z
+		{
+			get { return RegisterGet(Register.R30) | (RegisterGet(Register.R31) << 8); }
+			set { RegisterSet(Register.R30, (byte)(value & 0xFF)); RegisterSet(Register.R31, (byte)((value & 0xFF00) >> 8)); }
+		}
 		public byte PortGet(Port port)
 		{
 			return PortGet((int)port);

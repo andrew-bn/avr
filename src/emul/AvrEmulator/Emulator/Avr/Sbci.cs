@@ -2,9 +2,10 @@
 
 namespace Emulator.Avr
 {
-	public class Subi: Instruction
+	public class Sbci: Instruction
 	{
-		public Subi() : base("0101 KKKK dddd KKKK")
+		public Sbci()
+			: base("0100 KKKK dddd KKKK")
 		{
 			
 		}
@@ -13,9 +14,11 @@ namespace Emulator.Avr
 		{
 			var v = state.Proc.RegisterGet((Register) state.D + 0x10);
 
-			state.Proc.Status(Status.C, Math.Abs(v) < Math.Abs(state.K));
+			var carry = (byte)( state.Proc.StatusGet(Status.C) ? 1 : 0);
+			state.Proc.Status(Status.C, Math.Abs(v) < Math.Abs(state.K + carry));
 
-			v -= (byte)state.K;
+			v -= (byte)state.K ;
+			v -= carry;
 
 			state.Proc.RegisterSet((Register)state.D + 0x10, v);
 

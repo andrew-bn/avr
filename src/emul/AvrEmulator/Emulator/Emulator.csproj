@@ -60,9 +60,12 @@
       <DependentUpon>AsmContent.cs</DependentUpon>
     </Compile>
     <Compile Include="Avr\Extensions.cs" />
+    <Compile Include="Avr\Movw.cs" />
+    <Compile Include="Avr\St.cs" />
     <Compile Include="Avr\Port.cs" />
     <Compile Include="Avr\Register.cs" />
     <Compile Include="Avr\Status.cs" />
+    <Compile Include="Avr\Sbci.cs" />
     <Compile Include="Avr\Subi.cs" />
     <Compile Include="Avr\In.cs" />
     <Compile Include="Avr\Push.cs" />
