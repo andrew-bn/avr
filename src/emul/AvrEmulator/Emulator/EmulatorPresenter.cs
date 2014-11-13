@@ -19,6 +19,15 @@ namespace Emulator
 	 [NextTypeName]
 
 	 */
+	public enum RecordType
+	{
+		Bin = 0,
+		Eof,
+		Seg,
+		StartSeg,
+		ExtAddr,
+		StartLin,
+	}
 	public class EmulatorPresenter
 	{
 		private readonly IEmulatorUI _ui;
@@ -54,7 +63,7 @@ namespace Emulator
 				var trimmed = line.Trim();
 				if (trimmed.StartsWith("["))
 				{
-					if (type!=null)
+					if (type != null)
 					{
 						type.Properties = props.ToArray();
 						_ui.AddViewerType(type);
@@ -72,7 +81,7 @@ namespace Emulator
 						{
 							Name = string.Join(" ", descr.Skip(1)),
 							Type = descr[0]
-						}) ;
+						});
 				}
 			}
 			if (type != null)
@@ -91,7 +100,7 @@ namespace Emulator
 				sb.AppendLine(File.ReadAllText(f));
 			}
 
-			var objectViewerMv = sb.ToString().Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+			var objectViewerMv = sb.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			var viewer = string.Empty;
 			List<ObjectItem> objects = null;
 			foreach (var line in objectViewerMv)
@@ -108,7 +117,7 @@ namespace Emulator
 				}
 				else
 				{
-					var descr = trimmed.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
+					var descr = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 					objects.Add(new ObjectItem(int.Parse(descr[0]), string.Join(" ", descr.Skip(2)), descr[1]));
 				}
 			}
@@ -117,7 +126,11 @@ namespace Emulator
 				_ui.CreateViewer(viewer, objects.ToArray());
 			}
 		}
-
+		internal void Reset()
+		{
+			_processor.Reset();
+			_ui.JumpToLine(MapAddressToLine(_processor.PC));
+		}
 		internal void Load(string fileName)
 		{
 
@@ -137,10 +150,18 @@ namespace Emulator
 							.Select(l => l.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 							.ToDictionary(l => l[1], l => int.Parse(l[2], NumberStyles.HexNumber)); ;
 
-			_processor = new Processor(8000000,ReadFlash(File.ReadAllLines(dir + "\\" + file + ".hex")));
+			_processor = new Processor(8000000, ReadFlash(File.ReadAllLines(dir + "\\" + file + ".hex")));
+			_processor.FlashChanged += _processor_FlashChanged;
 			_ui.LoadAsmContent(new LoadContentArgs(_processor, _asmFile, _labelsMap, _definitionsMap, _equMap));
 
 			_ui.JumpToLine(MapAddressToLine(0));
+		}
+		private Dictionary<int, byte> _affectedAddresses = new Dictionary<int, byte>();
+		void _processor_FlashChanged(int address, byte value)
+		{
+			if (_affectedAddresses.ContainsKey(address))
+				_affectedAddresses[address] = value;
+			else _affectedAddresses.Add(address, value);
 		}
 
 
@@ -204,13 +225,14 @@ namespace Emulator
 
 		internal void Step()
 		{
+			_affectedAddresses.Clear();
 			var prevSp = _processor.SP;
 			_processor.Step();
 			if (_processor.SP != prevSp)
 				_ui.HighlightStackPointer(_processor.SP);
 			_ui.JumpToLine(MapAddressToLine(_processor.PC));
 			_ui.RefreshProcessorStatus(_processor.Ticks, _processor.Frequency);
-			_ui.RefreshAddress(_processor.AffectedAddresses.ToDictionary(a => a, a => _processor.Ram[a]));
+			_ui.RefreshAddress(_affectedAddresses);
 		}
 
 
@@ -233,6 +255,7 @@ namespace Emulator
 
 		internal void Run()
 		{
+			_affectedAddresses.Clear();
 			while (true)
 			{
 				_processor.Step();
@@ -241,11 +264,13 @@ namespace Emulator
 					_ui.HighlightStackPointer(_processor.SP);
 					_ui.JumpToLine(MapAddressToLine(_processor.PC));
 					_ui.RefreshProcessorStatus(_processor.Ticks, _processor.Frequency);
-					_ui.RefreshAddress(_processor.AffectedAddresses.ToDictionary(a => a, a => _processor.Ram[a]));
+					_ui.RefreshAddress(_affectedAddresses);
 
 					break;
 				}
 			}
 		}
+
+
 	}
 }

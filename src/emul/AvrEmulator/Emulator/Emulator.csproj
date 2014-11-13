@@ -59,10 +59,26 @@
     <Compile Include="AsmContent.Designer.cs">
       <DependentUpon>AsmContent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Avr\Adc.cs" />
     <Compile Include="Avr\And.cs" />
+    <Compile Include="Avr\Brcc.cs" />
+    <Compile Include="Avr\Breq.cs" />
+    <Compile Include="Avr\Brne.cs" />
+    <Compile Include="Avr\ICall.cs" />
+    <Compile Include="Avr\Cpc.cs" />
+    <Compile Include="Avr\Cp.cs" />
+    <Compile Include="Avr\Add.cs" />
+    <Compile Include="Avr\IJmp.cs" />
+    <Compile Include="Avr\LdZ.cs" />
+    <Compile Include="Avr\LdY.cs" />
+    <Compile Include="Avr\LdX.cs" />
+    <Compile Include="Avr\Lpm.cs" />
     <Compile Include="Avr\Mov.cs" />
+    <Compile Include="Avr\Reti.cs" />
     <Compile Include="Avr\Ret.cs" />
     <Compile Include="Avr\Pop.cs" />
+    <Compile Include="Avr\Brcs.cs" />
+    <Compile Include="Avr\Jmp.cs" />
     <Compile Include="Avr\Sei.cs" />
     <Compile Include="Avr\Cli.cs" />
     <Compile Include="Avr\Inc.cs" />
@@ -86,12 +102,6 @@
     <Compile Include="Avr\Out.cs" />
     <Compile Include="Avr\Rjmp.cs" />
     <Compile Include="EmulatorPresenter.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="IEmulatorUI.cs" />
     <Compile Include="LoadContentArgs.cs" />
     <Compile Include="MDIParent1.cs">
@@ -116,9 +126,6 @@
     </Compile>
     <EmbeddedResource Include="AsmContent.resx">
       <DependentUpon>AsmContent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MDIParent1.resx">
       <DependentUpon>MDIParent1.cs</DependentUpon>

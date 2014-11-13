@@ -88,24 +88,13 @@ threadManager_checkAndRun_next:
 
 
 "ATmega32" instruction use summary:
-adc   :   2 
-add   :   2
-brcc  :   1 
-brcs  :   3
-breq  :   7
-brne  :  26
-cp    :  18 
-cpc   :   3 
+
 cpi   :   2 
-icall :   4 
-ijmp  :   1 
-jmp   :   2 
-ld    :  18 
-ldd   :  78 
-lpm   :   5
 lsr   :   2 
-reti  :  20 
 sbc   :   2 
 sbr   :   1 
 std   :  58
 sub   :   2 
+
+1300
+

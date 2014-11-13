@@ -197,5 +197,10 @@ namespace Emulator
 		{
 			_emulatorPresenter.Run();
 		}
+
+		private void tsb_Reset_Click(object sender, EventArgs e)
+		{
+			_emulatorPresenter.Reset();
+		}
 	}
 }

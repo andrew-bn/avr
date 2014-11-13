@@ -19,7 +19,7 @@ namespace Emulator.Avr
 		public int PC;
 		private static Instruction[] _instructions;
 		public int Frequency { get; private set; }
-		public List<int> AffectedAddresses { get; private set; }
+		public event Action<int, byte> FlashChanged;
 		static Processor()
 		{
 			
@@ -99,9 +99,10 @@ namespace Emulator.Avr
 		}
 		public void MemorySet(int address, byte data)
 		{
+			if (Ram[address] == data) return;
+
 			Ram[address] = data;
-			if (!AffectedAddresses.Contains(address))
-				AffectedAddresses.Add(address);
+			FlashChanged(address, data);
 		}
 		public byte MemoryGet(int address)
 		{
@@ -111,7 +112,7 @@ namespace Emulator.Avr
 		public long Ticks;
 		public Processor(int frequency, UInt16[] flash)
 		{
-			AffectedAddresses = new List<int>();
+			FlashChanged += (a, v) => { };
 			PC = 0;
 			Frequency = frequency;
 			Flash = flash.Select(i=>new FlashItem {Cell = i}).ToArray();
@@ -143,7 +144,6 @@ namespace Emulator.Avr
 		}
 		public void Step()
 		{
-			AffectedAddresses.Clear();
 			GetCurrentInstruction().Execute();
 		}
 		
@@ -151,5 +151,11 @@ namespace Emulator.Avr
 		{
 			Ticks += cycles;
 		}
+		public void Reset()
+		{
+			Ticks = 0;
+			PC = 0;
+		}
+
 	}
 }

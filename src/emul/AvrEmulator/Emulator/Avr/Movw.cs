@@ -6,11 +6,11 @@ namespace Emulator.Avr
 
 		public override void Process(ExecutionState state)
 		{
-			var v = state.Proc.RegisterGet((Register)(state.R +0x10));
-			state.Proc.RegisterSet((Register)(state.D + 0x10),v);
+			var v = state.Proc.RegisterGet((Register)(state.R * 2));
+			state.Proc.RegisterSet((Register)(state.D * 2),v);
 
-			v = state.Proc.RegisterGet((Register)(state.R + 0x10+1));
-			state.Proc.RegisterSet((Register)(state.D + 0x10+1), v);
+			v = state.Proc.RegisterGet((Register)(state.R*2+1));
+			state.Proc.RegisterSet((Register)(state.D*2+1), v);
 
 			state.Proc.PC++;
 
