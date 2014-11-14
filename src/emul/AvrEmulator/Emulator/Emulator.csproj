@@ -60,6 +60,8 @@
       <DependentUpon>AsmContent.cs</DependentUpon>
     </Compile>
     <Compile Include="Avr\Adc.cs" />
+    <Compile Include="Avr\Sbc.cs" />
+    <Compile Include="Avr\Sbr.cs" />
     <Compile Include="Avr\And.cs" />
     <Compile Include="Avr\Brcc.cs" />
     <Compile Include="Avr\Breq.cs" />
@@ -85,7 +87,9 @@
     <Compile Include="Avr\Extensions.cs" />
     <Compile Include="Avr\Movw.cs" />
     <Compile Include="Avr\Sbrc.cs" />
-    <Compile Include="Avr\St.cs" />
+    <Compile Include="Avr\StZ.cs" />
+    <Compile Include="Avr\StY.cs" />
+    <Compile Include="Avr\StX.cs" />
     <Compile Include="Avr\Port.cs" />
     <Compile Include="Avr\Register.cs" />
     <Compile Include="Avr\Status.cs" />

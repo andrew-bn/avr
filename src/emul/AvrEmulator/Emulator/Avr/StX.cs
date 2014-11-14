@@ -1,8 +1,9 @@
 ﻿namespace Emulator.Avr
 {
-	public class St: Instruction
+	public class StX: Instruction
 	{
-		public St() : base("1001 001r rrrr 1100")
+		public StX()
+			: base("1001 001r rrrr 1100")
 		{
 		}
 

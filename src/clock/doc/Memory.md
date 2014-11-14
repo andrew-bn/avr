@@ -91,9 +91,6 @@ threadManager_checkAndRun_next:
 
 cpi   :   2 
 lsr   :   2 
-sbc   :   2 
-sbr   :   1 
-std   :  58
 sub   :   2 
 
 1300
