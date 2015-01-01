@@ -7,6 +7,7 @@ Offcet|Name           |Size(bytes)|Description
 
 ----------------
 Macroses
+XCALL ; pointer to object; method
 FIELD_ LD - uses Z (this). no side effects
 GETTER - uses GET,exptects P as pointer to obj
 GET - @0 - pointer to obj, affects T, returns R
@@ -42,56 +43,4 @@ Z - this pointer R30, R31
 this, new, type - R12, R13
 ret  - R14, R15
 
-
-
-----------
- threadManager_checkAndRun: ; A - pointer to thread
-
-		FIELD_WLD list_head, AH, AL
- 
- threadManager_checkAndRun_check:
-		; if state== wait then decrement thread_counter
-		GET AH:AL, thread_state
-		ldi BL, thread_Wait
-		cp RL, BL
-		brne threadManager_checkAndRun_next
-
-		;if thread_counter != 0 then decrement it
-		GETW AH:AL, thread_counter
-		tst RH
-		sbic SREG, 7 ; if rh not 0 then skip tst
-		tst RL
-		sbic SREG, 7 ; if rl not 0
-		rjmp threadManager_checkAndRun_next
-
-		crl BH
-		ldi BL, 1
-		sub RL, BL
-		sbc RH, BH
-
-		SETW AH:AL, thread_counter, RH:RL
-
-threadManager_checkAndRun_next:
-		GETW AH:AL, listItem_next
-		movw AH:AL, RH:RL
-		tst RH
-		sbic SREG, 7 ; if rh not 0 then skip tst
-		tst RL
-		sbic SREG, 7 ; if rl not 0
-		rjmp threadManager_checkAndRun_check
-
-		FIELD_WLD list_head, AH, AL; load head again
-		rjmp threadManager_checkAndRun_check
-		ret
-
-
-
-
-"ATmega32" instruction use summary:
-
-cpi   :   2 
-lsr   :   2 
-sub   :   2 
-
-1300
 

@@ -6,26 +6,88 @@
  */
  .listmac
  .include "kernel.inc"
- 
+
 .CSEG
-	;jmp thread2
-	;cli
-	START thread2
-	START thread3
-	;sei
-	;jmp thread2
-ret
+jmp str
+ .include "clock.inc"
+ .include "i2c.inc"
+ str:
+;transmit Start
+/*	call i2c_start
+	// send clockaddress - write
+	xcallib thisH:thisL, i2c_send, 0b11010000 //cpi r16, 0x18
+	//send pointer address
+	xcallib thisH:thisL, i2c_send, 0x00 //cpi r16, 0x28  
+	//send data
+	xcallib thisH:thisL, i2c_send, 0x00 //cpi r16, 0x28  
 
-thread2:
+	call i2c_stop*/
+;-------------------------------------------
+	;start startClock
+	NEW clock
+	movw CH:CL, RH:RL
+	GETW CH:CL, clk_data
+	movw DH:DL, RH:RL
+
 	ldi AL, 0xFF
-	clr AH
 	out DDRA, AL
+	out DDRB, AL
+	out DDRD, AL
+	ldi BL,1
+	clr BH
 
+
+	nextSecond:
+	GET DH:DL, clkdata_minutes
+	out PORTD, RL
+	GET DH:DL, clkdata_seconds
+	out PORTB, RL
+	
+	out PORTA, BL
+	
+
+	WAIT 333
+	xcall ch:cl, clock_read
+
+	movw AH:AL, RH:RL
+	tst RH
+	brne tw_error
+
+	jmp nextSecond
+
+
+ret
+	tw_error:
+	
+	out PORTB, AL
+	out PORTD, AH
+
+	WAIT 1000
+
+	clr TL
+	out PORTB, TL
+	out PORTD, TL
+	out PORTA, TL
+	WAIT 1000
+	jmp tw_error
+ret
+startClock:
+	
+ret
+startDone:
+	ldi AL, 0xFF
+	ldi AH, 0xFF
+	out DDRA, AL
+	out DDRB, AL
+
+	ldi AL, 1
 	lbl:
 	
-	out PORTA, AL
+	out PORTA, BL
+	out PORTB, BH
 	WAIT 1000
 	out PORTA, AH
+	out PORTB, AH
 	WAIT 1000
 		
 	rjmp lbl

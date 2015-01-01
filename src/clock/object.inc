@@ -53,7 +53,22 @@
 	pop TL
 	pop TL
  .endm
+ .macro XCALLB ; pointer to object; method; param
+	movw PH:PL, @0
+	push @2
+	call @1
+	pop TL
+ .endm
+ .macro XCALLIB ; pointer to object; method; param
 
+	mov TL, AL
+	ldi AL, low(@2)
+	push AL
+	mov AL, TL
+	movw PH:PL, @0
+	call @1
+	pop TL
+ .endm
  .macro XCALLIW ; pointer to object; method; Wparam
 
 	mov TL, AL
@@ -115,7 +130,7 @@
  .endm
 
  
- .macro PARAM_LD; @ param offcet
+ .macro PARAM_LD; @ param offcet, @1 register destination
 	.if @0 <= 0x3E
 		ldd @1, Y+@0
 	.else

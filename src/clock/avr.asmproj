@@ -65,6 +65,15 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="clock.inc">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="clockData.inc">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="i2c.inc">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="list.inc">
       <SubType>Code</SubType>
     </Compile>

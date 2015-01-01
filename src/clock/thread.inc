@@ -32,7 +32,7 @@
  .equ thread_cmdPointer = thread_counter + 2
  .equ thread_startParameter = thread_cmdPointer + pointerSize
  .equ thread_stackMinSpace = thread_startParameter + pointerSize
- .equ _thread_size = thread_stackMinSpace + 40
+ .equ _thread_size = thread_stackMinSpace + 80
 
  thread: CLASS listItem, _thread_size
  	thread_ctor:

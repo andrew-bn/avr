@@ -1,5 +1,0 @@
-﻿[Custom registers]
-	93 Stack Stack Pointer
-	0 CustomRegisters Registers
-[Status Register]
-	95	StatusRegister Status

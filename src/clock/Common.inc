@@ -107,15 +107,15 @@
 		push DL
 		push DH
 	.endif
-	.if (@0 & Er) == Er
+	.if ((@0) & Er) == Er
 		push EL
 		push EH
 	.endif
-	.if (@0 & Xr) == Xr
+	.if ((@0) & Xr) == Xr
 		push XL
 		push XH
 	.endif
-	.if (@0 & Zr) == Zr
+	.if ((@0) & Zr) == Zr
 		push ZL
 		push ZH
 	.endif

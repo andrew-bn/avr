@@ -30,6 +30,8 @@
  threadManager_ctor: 
 	BEGIN_TINY
 		THIS list_ctor 
+		clr AL
+		FIELD_WST threadManager_currentthread, AL,AL
 	END_TINY
 
  threadManager_checkAndRun: ; A - pointer to thread

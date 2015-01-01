@@ -57,11 +57,11 @@
 				PARAM_WLD list_add_item, AH, AL
 				FIELD_WLD list_tail, BH, BL
 
-				XCALLW AH:AL, listItem_setPrev, BH, BL
+				SETW AH:AL, listItem_prev, BH, BL
 
 	list_add_setNext:
 				; set next for Tail
-				XCALLW BH:BL, listItem_setNext, AH, AL
+				SETW BH:BL, listItem_next, AH, AL
 				FIELD_WST list_tail, AH, AL
 
 	END_SMALL
