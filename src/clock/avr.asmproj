@@ -98,6 +98,9 @@
     <Compile Include="object.inc">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sevenSeg.inc">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="thread.inc">
       <SubType>Code</SubType>
     </Compile>

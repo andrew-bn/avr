@@ -66,13 +66,65 @@ startReadClock:
 	movw DH:DL, RH:RL
 
 	startClock_next:
-	
-	GET DH:DL, clkdata_hours
+	GET DH:DL, clkdata_seconds
+	ldi AL, 4
+	out PORTD, AL
+	mov al,rl
+	out porta, al
+	andi al, 0x0f
+
+	cpi al, 0
+	brne case1
+	ldi al, 0x3f out portb, al
+	rjmp case_default
+
+	case1: cpi al,1
+	brne case2
+	ldi al, 0x06 out portb, al
+	rjmp case_default
+
+	case2: cpi al,2
+	brne case3
+	ldi al, 0x5b out portb, al
+	rjmp case_default
+
+	case3: cpi al,3
+	brne case4
+	ldi al, 0x4f out portb, al
+	rjmp case_default
+
+	case4: cpi al,4
+	brne case5
+	ldi al, 0x66 out portb, al
+	rjmp case_default
+
+	case5: cpi al,5
+	brne case6
+	ldi al, 0x6d out portb, al
+	rjmp case_default
+
+	case6: cpi al,6
+	brne case7
+	ldi al, 0x7d out portb, al
+	rjmp case_default
+
+	case7: cpi al,7
+	brne case8
+	ldi al, 0x07 out portb, al
+	rjmp case_default
+
+	case8: cpi al,8
+	brne case9
+	ldi al, 0x7f out portb, al
+	rjmp case_default
+
+	case9: ldi al, 0x6f out portb, al
+	case_default:
+	/*GET DH:DL, clkdata_hours
 	out PORTA, RL
 	GET DH:DL, clkdata_minutes
-	out PORTB, RL
-	GET DH:DL, clkdata_seconds
-	out PORTD, RL
+	out PORTB, RL*/
+	
 
 	WAIT 500
 	rjmp startClock_next
