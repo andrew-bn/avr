@@ -135,15 +135,27 @@
 
 		;read minutes
 		inc AH;7
-		call i2c_read
+		call i2c_read_ack
 		mov AL, RL
-		cpi AL, 0x58
+		cpi AL, 0x50
 		breq clock_read_minutes
 		mov RH, AH
 	end_small
 		clock_read_minutes:
 		mov BH, RH
 		SETB CH:CL, clkdata_minutes, BH
+
+		;read hours
+		inc AH;8
+		call i2c_read
+		mov AL, RL
+		cpi AL, 0x58
+		breq clock_read_hours
+		mov RH, AH
+	end_small
+		clock_read_hours:
+		mov BH, RH
+		SETB CH:CL, clkdata_hours, BH
 
 		; stop i2c
 		call i2c_stop

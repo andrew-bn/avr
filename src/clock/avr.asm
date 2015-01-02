@@ -12,6 +12,10 @@ jmp str
  .include "clock.inc"
  .include "i2c.inc"
  str:
+	ldi AL, 0xFF
+	out DDRA, AL
+	out DDRB, AL
+	out DDRD, AL
 ;transmit Start
 /*	call i2c_start
 	// send clockaddress - write
@@ -26,38 +30,22 @@ jmp str
 	;start startClock
 	NEW clock
 	movw CH:CL, RH:RL
-	GETW CH:CL, clk_data
-	movw DH:DL, RH:RL
-
-	ldi AL, 0xFF
-	out DDRA, AL
-	out DDRB, AL
-	out DDRD, AL
-	ldi BL,1
-	clr BH
-
+	startw startReadClock, CH, CL
 
 	nextSecond:
-	GET DH:DL, clkdata_minutes
-	out PORTD, RL
-	GET DH:DL, clkdata_seconds
-	out PORTB, RL
-	
-	out PORTA, BL
-	
 
-	WAIT 333
-	xcall ch:cl, clock_read
+		xcall ch:cl, clock_read
 
-	movw AH:AL, RH:RL
-	tst RH
-	brne tw_error
+		movw AH:AL, RH:RL
+		tst RH
+		brne tw_error
+		WAIT 500
 
 	jmp nextSecond
 
-
 ret
-	tw_error:
+
+tw_error:
 	
 	out PORTB, AL
 	out PORTD, AH
@@ -71,46 +59,23 @@ ret
 	WAIT 1000
 	jmp tw_error
 ret
-startClock:
-	
-ret
-startDone:
-	ldi AL, 0xFF
-	ldi AH, 0xFF
-	out DDRA, AL
-	out DDRB, AL
 
-	ldi AL, 1
-	lbl:
+startReadClock:
+	movw CH:CL, PH:PL
+	GETW CH:CL, clk_data
+	movw DH:DL, RH:RL
+
+	startClock_next:
 	
-	out PORTA, BL
-	out PORTB, BH
-	WAIT 1000
-	out PORTA, AH
-	out PORTB, AH
-	WAIT 1000
-		
-	rjmp lbl
+	GET DH:DL, clkdata_hours
+	out PORTA, RL
+	GET DH:DL, clkdata_minutes
+	out PORTB, RL
+	GET DH:DL, clkdata_seconds
+	out PORTD, RL
+
+	WAIT 500
+	rjmp startClock_next
 
 ret
-
-
-
-thread3:
-	ldi AL, 0xFF
-	clr AH
-	out DDRB, AL
-
-	lbl2:
-	
-	out PORTB, AL
-	WAIT 333
-	out PORTB, AH
-	WAIT 333
-		
-	rjmp lbl2
-
-ret
-
-
 
